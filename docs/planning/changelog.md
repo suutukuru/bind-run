@@ -19,3 +19,9 @@
 
 - `project.godot` と空の `main.tscn` を追加。レンダラーは Compatibility（ADR-010）。画面 1280×720、伸縮は `canvas_items` / `expand`（仮決定。縦横の向き U-01 が決まったら再検討）。
 - 計画変更: InputMap の定義を TASK-004 から TASK-008 に移動（理由: 手書きの入力設定を検証できる環境がなく、使う時点で動作確認とセットにするほうが安全）。
+
+## 2026-10-19 CI の追加（TASK-016a）
+
+- オーナー回答: **PC は今使えない**。→ 実行確認は GitHub Actions（CI）と、Web 版をスマホのブラウザで開く方法で行う。TASK-003（Windows に Godot を入れる）は PC が使えるまで保留。
+- 追加: `.github/workflows/ci.yml`（Godot 4.7.2 を取得してチェックサム検証 → import → 単体テスト（あれば）→ Web 書き出し → 成果物をアップロード）、`ci/export_presets.web.cfg`（秘密情報なしの Web 書き出し設定。ルートの `export_presets.cfg` は引き続き git 管理外）。
+- 効果: R-08（Godot を実行できない）が緩和される。CI のログを私が読めるため、構文エラーやテスト失敗を私自身が検出・修正できる。

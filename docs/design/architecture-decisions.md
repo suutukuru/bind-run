@@ -134,5 +134,5 @@
 
 - 採用: **Compatibility**（`gl_compatibility`）
 - 理由: 2D ゲームなので高機能な描画は不要。Web 版でスマホのブラウザ確認（TASK-016）をする計画で、Godot 4 の Web 書き出しは Compatibility のみ対応と認識している。
-- ※ 未確認: 「Web 書き出しは Compatibility のみ」は私の知識で、4.7 の公式ドキュメントで再確認できていない。TASK-016 着手前に確認する。
+- 確認済み: Godot 4 の Web 書き出しは WebGL 2.0 のみ対応で、Compatibility が必要（公式ドキュメント 4.2 版で確認。4.7 版は未確認）。
 - 変更可能性: 高い。プロジェクト設定 1 行（`renderer/rendering_method`）。ただし 2D の光・影・一部シェーダーの見た目が変わる可能性がある。
