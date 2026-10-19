@@ -39,8 +39,11 @@ page.on('console', (m) => logs.push(`[${m.type()}] ${m.text()}`));
 page.on('pageerror', (e) => logs.push(`[pageerror] ${e.message}`));
 
 const failures = [];
+const results = [];
 function check(ok, message) {
-  console.log(`${ok ? 'OK  ' : 'FAIL'} ${message}`);
+  const line = `${ok ? 'OK  ' : 'FAIL'} ${message}`;
+  console.log(line);
+  results.push(line);
   if (!ok) failures.push(message);
 }
 
@@ -113,8 +116,13 @@ try {
   if (e.message !== '__skip_drag__') check(false, `exception: ${e.message}`);
 }
 
-console.log('==== browser console ====');
-for (const line of logs.slice(0, 160)) console.log(line);
+// 同じ行が何千回も出ることがあるので、種類ごとにまとめて回数を付ける
+const counts = new Map();
+for (const line of logs) counts.set(line, (counts.get(line) || 0) + 1);
+console.log('==== browser console (unique lines, with counts) ====');
+for (const [line, n] of [...counts].slice(0, 40)) console.log(`${n > 1 ? `(x${n}) ` : ''}${line}`);
+console.log(`==== summary (${useWebkit ? 'webkit' : 'chrome'}) ====`);
+for (const line of results) console.log(line);
 await browser.close();
 server.close();
 process.exit(failures.length ? 1 : 0);
