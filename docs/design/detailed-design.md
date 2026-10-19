@@ -1,8 +1,8 @@
 # 詳細設計書
 
 - 版: 0.1（Phase 0）/ 2026-10-19
-- 範囲: **Phase 1（最小プロトタイプ）のみ**。Phase 2 以降は着手前に追記する。
-- 状態: 未実装。実装時に食い違いがあれば本書を更新し、changelog に理由を書く。
+- 範囲: Phase 1〜5（2026-10-19 時点で実装済み）。章 1〜6 は Phase 1、章 7 以降は Phase 2〜5。
+- 状態: CI（Godot 4.7.2）で単体テスト・通しプレイが成功。実機での見た目・操作の確認は [owner-checklist.md](../testing/owner-checklist.md)。実装との食い違いは本書を更新し、changelog に理由を書く。
 
 ## 1. ディレクトリとスクリプト一覧（Phase 1）
 
@@ -159,3 +159,79 @@ Phase 1 ではキャラ同士は当たらず、壁もない（フィールドは
 
 - 自動: `godot --headless --path . --script res://tests/run_tests.gd`。終了コード 0 で成功（TC-001〜TC-006）。
 - 手動: test-cases.md の TC-101〜TC-106。
+
+
+---
+
+# 以降: Phase 2〜5 の実装（2026-10-19）
+
+## 7. シーン構成（main.tscn の現状）
+
+```
+Main (Node2D, main.gd)                進行役: メニュー・強化の適用
+├─ RunState                           共有HP・時間・レベル・経験値
+├─ CharacterA (Character) └ Weapon    Blaster（弾）
+├─ CharacterB (Character) └ Weapon    Shockwave（範囲）
+├─ InputA / InputB (KeyboardMoveInput)
+├─ Rope (rope.tscn) / RopeAttack      紐の拘束・描画／紐攻撃
+├─ EnemySpawner                       敵とオーブがこの子になる
+├─ Camera (FollowCamera)
+├─ TouchLayer (CanvasLayer) ├ TouchA └ TouchB   タッチ入力（画面座標）
+├─ DebugOverlay / TuningPanel         開発用の状態表示・調整パネル
+├─ Hud                                HP・経験値・時間・ポーズボタン
+└─ MenuPanel                          レベルアップ・ポーズ・結果
+```
+
+起動シーンは `scenes/title/title.tscn`（START で main.tscn へ）。処理順（`process_priority`）: KeyboardMoveInput -10 → TouchMoveInput -9 → キャラ・敵・武器 0 → Rope 10 → RopeAttack 11。
+
+## 8. 紐の拡張（Rope / RopeModel / RopeConfig）
+
+- `RopeModel` に純粋関数を追加: `elastic_pull`（自然長を超えた分に比例して引き戻す。1 フレームで自然長より内側へ行き過ぎない）、`follow_hub`（慣性ハブ: 目標へ `rate × delta` の割合で近づく）、`distance_to_segment`（紐攻撃の判定）。
+- `RopeConfig` に追加: `limit_mode`（DRAG=0 / BLOCK=1）、`stiffness`、`hub_follow_rate`、紐攻撃の `attack_threshold / attack_damage / attack_rehit_interval / attack_half_width`。
+- `Rope.step(delta)` の流れ: ① DRAG ならここでハブを更新（移動後の位置から）② 各メンバーに `elastic_pull` → `constrain`（最大長）③ 伸び率を計算 ④ BLOCK ならここでハブを更新（前フレームのハブを基準に拘束するので、押した側が止まるだけで相方は引きずられない）。
+- `Rope` は `_ready` で `config` を複製する。調整パネルで値を変えても共有の `.tres` は変わらない。
+- 紐攻撃が有効な間（`attack_active`）は紐に白い太い光を重ねて描く。
+- enum の型指定を使わない: クラス自身の `enum` を変数の型にすると、ゲーム起動時の読み込み順で「Cannot assign a value of type …Side as Side」になり、スクリプトが読み込めなかった（CI のスモーク実行で発見、ADR-011）。`TouchMoveInput.LEFT/RIGHT` と `RopeConfig.DRAG/BLOCK` は int の定数で持つ。
+
+## 9. カメラとUIの大きさ（ADR-012）
+
+- `FollowCamera`: 位置は `Rope.hub`。ズームは `短辺 / view_short_side(600)` で、**画面の短辺にワールドの 600px が映る**よう毎フレーム補正する。縦持ちの `expand` で表示範囲が縦に広がってキャラが点になる問題への対処。
+- `UiScale.unit(viewport)` = 画面の短辺の 1%。HUD・メニュー・調整パネル・デバッグ文字・スティックの半径（`stick_radius_ratio` = 0.15）はこの単位で決める。画面サイズが変わる（`size_changed`）たびに再配置する。
+
+## 10. タッチ入力（TouchMoveInput）
+
+- `_unhandled_input` で受ける（ボタンなど UI が処理した指はスティックにしない）。ポーズ（`NOTIFICATION_PAUSED/UNPAUSED`）で状態をリセットし、止まっている間に離した指が残らないようにする。
+- 半径は `stick_radius_px()` = 短辺 × 0.15。描画は指の位置に半透明の円とつまみ（キャラの色）。
+
+## 11. 戦闘（Phase 3）
+
+- **RunState**（`scripts/game/run_state.gd`）: 共有 HP、`elapsed`、`level`、`xp`、`kills`、`running`。信号: `hp_changed / xp_changed / leveled_up / finished(victory)`。`max_hp` を増やすと増えた分だけ HP も回復。`xp_needed(level) = 5 + (level−1) × 5`。
+- **Enemy**（`scenes/enemies/enemy.gd`、`class_name Enemy`）: 物理エンジンを使わない `Node2D`。最も近いキャラへ直進し、`radius + Character.RADIUS` 以内で `RunState.take_damage`（同じ敵は 0.7 秒の間隔）。`take_damage` で被弾、HP 0 で `died` を出して消える。グループ `enemies`。`rope_hit_ready_at` は紐攻撃の再ヒット管理用。
+- **EnemySpawner**: 画面外（見えている範囲の対角線の半分 + 80px）の円周に出現。静的関数 `interval_at / count_at / weights_at / pick_index` で出現を決める（1.1 秒 → 0.3 秒に 240 秒かけて短縮、90 秒ごとに 1 回の出現数が +1、Runner は 30 秒後・Tank は 90 秒後から混ざる、最大 180 体）。
+- **Weapon**（`scenes/weapons/weapon.gd`）: キャラの子。`def: WeaponDef` を実行時のコピー（`damage / cooldown / reach / projectile_speed`）にして持つので、強化しても `.tres` は変わらない。`SHOT` は最も近い敵へ `Projectile` を撃つ（敵がいない間は待機し、現れた瞬間に撃つ）。`PULSE` は半径内の全敵に一度にダメージを与え `PulseEffect`（輪）を出す。
+- **RopeAttack**: Rope の後（優先度 11）に判定。伸び率が `attack_threshold` 以上のメンバーの紐（ハブ→メンバー）と各敵の距離が `敵の半径 + attack_half_width` 以内なら、再ヒット間隔つきでダメージ。武器とは別ノードで、互いを参照しない（FR-033）。
+
+## 12. 成長（Phase 4）
+
+- **XpOrb**: 敵の撃破位置に落ちる。キャラが `EnemySpawner.orb_pickup_radius` 以内に来ると 420px/秒で吸い寄せられ、触れると `RunState.add_xp`（2 人で共有）。
+- **UpgradeDef**: 「Main から見たノードのパス」と「プロパティのパス（`config:attack_damage` のような入れ子も可）」と増減量だけを持つ。`apply_to(Main)` で適用。ADD は加算、MULTIPLY は `× (1 + amount)`。
+- **UpgradePool**: `preload` で 13 種を列挙（`DirAccess` で走査しない: 書き出し後は `.tres` が `.remap` に変わるため）。**UpgradePicker**: 上限に達していないものから重複なしで 3 つ、乱数は呼び出し側から渡す（再現できる）。
+- **Main**: `leveled_up` で選択メニューを開く。一度に複数レベル上がったら、選ぶたびに次を出す。
+
+## 13. UI（Phase 5）
+
+- **MenuPanel**: `process_mode = ALWAYS` の CanvasLayer。`open(title, body, options, pause_game)`、選ぶとメニューを閉じてから callback。タイトル・ポーズ・レベルアップ・結果で共用。
+- **Hud**: HP バー（赤）、経験値バー（青）、`LV / 残り時間 / KILLS`、ポーズボタン（II）。
+- **Title**: 遊び方と START。結果画面は RETRY（シーンを読み直す）と TITLE。
+- **すべて英語**: Web 版の標準フォントに日本語の文字が入っていないため（ADR-013）。
+
+## 14. 開発用（DebugOverlay / TuningPanel）
+
+- `DebugOverlay`: 0.2 秒ごとに FPS・表示サイズ・ウィンドウサイズ・A/B の位置・距離・伸び率・敵数を表示。F3 で切替。
+- `TuningPanel`: 右上の TUNE で開閉。`Rope.config` の複製の `max_radius / natural_radius / stiffness / hub_follow_rate / attack_damage / attack_threshold` をスライダーで、`limit_mode` を選択で、ハブの点とデバッグ文字をチェックで変える。
+
+## 15. テスト（現状）
+
+- `tests/test_*.gd` を `godot --headless --fixed-fps 60 --script res://tests/run_tests.gd` で実行（CI）。ランナーは 1 フレーム待ってから始め、`await` するテスト（物理フレームを進める統合テスト）にも対応する。
+- 統合テスト（`test_gameplay.gd`）: ボットが ①紐だけで敵を倒す ②武器で全滅させ経験値を拾う ③25 秒のランを勝利まで（途中でレベルアップを選ぶ）④囲まれて敗北、を通す。
+- CI はさらに、ゲームシーンとタイトルを 300 フレーム起動して `SCRIPT ERROR` が出ないこと、Web 書き出しがスレッドなしであることを確認する。

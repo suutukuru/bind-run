@@ -22,22 +22,23 @@
 
 1. Godot 4.7.x（標準版。.NET 版ではない）を [公式サイト](https://godotengine.org/download/windows/) から入手する。
 2. このリポジトリを clone する。
-3. Godot のプロジェクトマネージャーで「インポート」し、`project.godot` を選ぶ（TASK-004 で作成済み。**Godot での起動は未確認**）。
+3. Godot のプロジェクトマネージャーで「インポート」し、`project.godot` を選ぶ。
 
 ## 実行方法
 
-- **スマホ/ブラウザで確認**: https://suutukuru.github.io/bind-run/ （push ごとに自動更新。現在は空の灰色の画面のみ）
-
-- Godot エディタで F5（Phase 1 以降）。
-- 操作（予定）: A = WASD、B = 矢印キー、F1 = 接続点の表示切替、F3 = デバッグ表示切替。
+- **スマホ/ブラウザで遊ぶ**: https://suutukuru.github.io/bind-run/ （push のたびに自動更新）
+  - 画面の左半分をドラッグ → 青いキャラ（A）、右半分 → 橙のキャラ（B）。2 本指で同時に動かせる。
+  - 右上の TUNE で紐の調整、左上の II でポーズ。
+- キーボード（PC）: A = WASD、B = 矢印キー、F1 = 接続点の表示切替、F3 = デバッグ表示切替。
+- Godot エディタで開く場合は F5（`project.godot` を開く。起動シーンはタイトル）。
 
 ## テスト方法
 
 ```
-godot --headless --path . --script res://tests/run_tests.gd
+godot --headless --fixed-fps 60 --path . --script res://tests/run_tests.gd
 ```
 
-終了コード 0 で全件成功（Phase 1 の TASK-005 で作成予定）。詳細は [テスト戦略](docs/testing/test-strategy.md)。
+終了コード 0 で全件成功（push のたびに GitHub Actions でも自動実行）。詳細は [テスト戦略](docs/testing/test-strategy.md)。
 
 ## ドキュメント
 
@@ -55,10 +56,11 @@ godot --headless --path . --script res://tests/run_tests.gd
 | 計画 | [risks.md](docs/planning/risks.md) | リスク |
 | 計画 | [changelog.md](docs/planning/changelog.md) | 仕様・設計の変更履歴 |
 | テスト | [test-strategy.md](docs/testing/test-strategy.md) / [test-cases.md](docs/testing/test-cases.md) / [test-results.md](docs/testing/test-results.md) | 方針・ケース・結果 |
+| テスト | [owner-checklist.md](docs/testing/owner-checklist.md) | **オーナーがスマホで確認する点のまとめ** |
 | 学習 | [learning-log.md](docs/learning/learning-log.md) / [glossary.md](docs/learning/glossary.md) | 学んだ概念、用語集 |
 
 ## 現在の状況
 
-- **フェーズ**: Phase 0（環境調査・企画整理）完了、オーナーのレビュー待ち
-- **動作状況**: 空のシーンのみ。CI（Godot 4.7.2）で import と Web 書き出しが成功。画面を出しての起動はまだ未確認。ゲームのコードはまだない
-- **直近のタスク**: TASK-005〜006（テストランナーと紐の計算）→ TASK-007〜009（2 人の表示と移動）
+- **フェーズ**: Phase 5 まで実装済み（タイトル → プレイ → 結果 → リトライの一連の流れ）。**実機での確認待ち**。
+- **動作状況**: CI（Godot 4.7.2）で 76 件のテスト（ボットによる通しプレイを含む）が成功し、Web 版が自動公開されている。画面の見た目・指の操作・紐の手触り・難易度は **Claude からは未確認**。
+- **次にやること**: [owner-checklist.md](docs/testing/owner-checklist.md) の確認（オーナー）→ 結果を元に紐の方式・バランス・向き・日本語化を決める（Phase 6〜7）。Android/iOS のビルドは Phase 8〜9。

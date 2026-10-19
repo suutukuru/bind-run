@@ -9,12 +9,12 @@
 
 | Resource | 主な項目 | 使用フェーズ | 状態 |
 |---|---|---|---|
-| `RopeConfig` | `max_radius`, `natural_radius`,（P2）`stiffness`, `pull_mode`,（P3）`tension_threshold`, `damage`, `rehit_interval` | 1〜3 | Phase 1 で作成 |
-| `CharacterDef` | `display_name`, `move_speed`, `color`, `weapon: WeaponDef` | 3 | 未作成 |
-| `WeaponDef` | `damage`, `cooldown`, `range`, `projectile_speed`, `pattern`（最寄り射撃 / 周囲範囲 など） | 3 | 未作成 |
-| `EnemyDef` | `max_hp`, `move_speed`, `contact_damage`, `xp_value`, `radius` | 3 | 未作成 |
-| `UpgradeDef` | `id`, `title`, `description`, `target`（A/B/共通/紐）, `stat`, `amount`, `max_stacks` | 4 | 未作成 |
-| `WaveTable` | 経過時間ごとの出現間隔・敵の種類 | 3〜5 | 未作成 |
+| `RopeConfig` | `max_radius`, `natural_radius`, `limit_mode`, `stiffness`, `hub_follow_rate`, `attack_threshold`, `attack_damage`, `attack_rehit_interval`, `attack_half_width` | 1〜3 | **作成済み**（実行時は Rope が複製して持つ）|
+| `CharacterDef` | `display_name`, `move_speed`, `color`, `weapon: WeaponDef` | — | **作らないことにした**: キャラは 2 人固定で、`Character` の `@export` と子の `Weapon` で足りる。キャラを増やす段階で再検討 |
+| `WeaponDef` | `display_name`, `pattern`（SHOT / PULSE）, `damage`, `cooldown`, `reach`, `projectile_speed` | 3 | **作成済み**（blaster.tres, shockwave.tres。`range` は GDScript の組み込み名なので `reach`）|
+| `EnemyDef` | `display_name`, `max_hp`, `move_speed`, `contact_damage`, `xp_value`, `radius`, `color` | 3 | **作成済み**（grunt / runner / tank）|
+| `UpgradeDef` | `id`, `title`, `description`, `target_path`, `property_path`, `amount`, `mode`（加算/乗算）, `max_stacks` | 4 | **作成済み**（13 種。ADR-015）|
+| `WaveTable` | 経過時間ごとの出現間隔・敵の種類 | — | **作らないことにした**: `EnemySpawner` の静的関数（`interval_at / count_at / weights_at`）で足りる。ステージや敵が増えたら Resource 化を検討 |
 
 - Phase 1 では `move_speed` は `Character` の `@export` に直接持つ。`CharacterDef` は武器が入る Phase 3 で導入する（今作ると中身がほぼ空の抽象化になるため）。
 

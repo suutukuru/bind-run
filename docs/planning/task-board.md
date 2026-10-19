@@ -1,39 +1,59 @@
 # タスクボード
 
-- 最終更新: 2026-10-19（Phase 0 完了時）
+- 最終更新: 2026-10-19（Phase 5 まで実装、実機確認待ち）
 - 状態: Backlog / Ready / In Progress / Blocked / Review / Done
 - 優先度: P0 進行を妨げる / P1 現フェーズ必須 / P2 後続でも可 / P3 改善
 - 見積もり: XS / S / M / L / XL（XL は分割する）
 
 ## サマリー
 
+状態の読み方: **Review（CI 済み・実機確認待ち）** = 自動テストと CI は成功しているが、画面での見た目・指の操作・手触りはオーナーの確認が必要。確認項目は [owner-checklist.md](../testing/owner-checklist.md) にまとめてある。
+
 | ID | タイトル | Phase | 優先度 | 見積 | 状態 | 依存 |
 |---|---|---|---|---|---|---|
 | TASK-001 | クラウド作業環境の調査 | 0 | P1 | XS | Done | — |
-| TASK-002 | ドキュメント初版の作成 | 0 | P1 | M | Review | TASK-001 |
-| TASK-003 | Windows に Godot 4.7.x を用意し、バージョンを記録する | 0 | P0 | S | Ready（オーナー作業） | — |
-| TASK-004 | Godot プロジェクトの骨組みを作る | 1 | P1 | S | Review（実行確認待ち） | — |
+| TASK-002 | ドキュメント初版の作成 | 0 | P1 | M | Review（オーナーのレビュー待ち）| TASK-001 |
+| TASK-003 | Windows に Godot 4.7.x を用意し、バージョンを記録する | 0 | P3 | S | Backlog（PC が使えるようになるまで保留。CI と Web 版で代替中）| — |
+| TASK-004 | Godot プロジェクトの骨組みを作る | 1 | P1 | S | Done（iPhone の Web 版で灰色の画面を確認）| — |
 | TASK-005 | 自作テストランナーを作る | 1 | P1 | S | Done | TASK-004 |
 | TASK-006 | RopeModel（純粋計算）と単体テスト | 1 | P1 | S | Done | TASK-005 |
-| TASK-007 | 2 人のキャラクターを表示する | 1 | P1 | S | Review（CI 結果待ち。画面表示は未確認）| TASK-004 |
-| TASK-008 | 入力アクションと KeyboardMoveInput（A の移動） | 1 | P1 | S | Review（CI 結果待ち。実機操作は未確認）| TASK-007 |
-| TASK-009 | B の移動（同じ仕組みを設定違いで使う） | 1 | P1 | XS | Review（CI 結果待ち。実機操作は未確認）| TASK-008 |
-| TASK-010 | Rope ノード: ハブ計算と最大長の拘束 | 1 | P1 | M | Backlog | TASK-006, 009 |
-| TASK-011 | 紐とハブの描画、ハブ表示切替 | 1 | P1 | S | Review（CI 成功。見た目は未確認）| TASK-010 |
-| TASK-012 | カメラをハブに追従させる | 1 | P1 | XS | Review（CI 結果待ち。見た目は未確認）| TASK-010 |
-| TASK-013 | デバッグ表示（FPS・距離・伸び率） | 1 | P2 | S | Backlog | TASK-010 |
-| TASK-015 | 最小のタッチ入力（TouchMoveInput）| 1 | P1 | S | Review（CI 成功。スマホ実機の確認待ち）| TASK-009 |
-| TASK-016 | GitHub Actions で Web 版を書き出し Pages で公開 | 1 | P1 | M | In Progress（016a・016b 完了、016c のスマホ確認待ち） | TASK-004, オーナーがリポジトリを公開 |
-| TASK-014 | Phase 1 手動プレイテストと記録 | 1 | P1 | S | Backlog | TASK-011〜013, 015, 016 |
-| TASK-020 | 弾性区間（自然長〜最大長で引き戻す） | 2 | P1 | M | Backlog | TASK-014 |
-| TASK-021 | 限界時の方式切替（引きずる / 止める） | 2 | P1 | S | Backlog | TASK-014 |
-| TASK-022 | 紐パラメータの実行時調整 UI | 2 | P2 | S | Review（CI 結果待ち。スマホでの操作は未確認）| TASK-020 |
-| TASK-023 | 慣性ハブの試作（ADR-002 案 B） | 2 | P2 | M | Backlog | TASK-020 |
-| TASK-024 | Phase 2 比較プレイテストと方式決定 | 2 | P1 | S | Backlog | TASK-020〜023 |
-| TASK-025 | 仮の仮想ツインスティック（Phase 2b） | 2b | P1 | M | Backlog | TASK-024 |
-| TASK-026 | Android 実機での操作スパイク評価 | 2b | P1 | M | Backlog | TASK-025 |
+| TASK-007 | 2 人のキャラクターを表示する | 1 | P1 | S | Review（CI 済み・実機確認待ち）| TASK-004 |
+| TASK-008 | 入力アクションと KeyboardMoveInput（A の移動）| 1 | P1 | S | Review（CI 済み。キーボード実機は PC がないため未確認）| TASK-007 |
+| TASK-009 | B の移動 | 1 | P1 | XS | Review（同上）| TASK-008 |
+| TASK-010 | Rope: ハブ計算と最大長の拘束 | 1 | P1 | M | Review（CI 済み・実機確認待ち）| TASK-006, 009 |
+| TASK-011 | 紐とハブの描画、ハブ表示切替 | 1 | P1 | S | Review（CI 済み・実機確認待ち）| TASK-010 |
+| TASK-012 | カメラ追従（画面の短辺に合わせたズーム補正つき）| 1 | P1 | S | Review（CI 済み・実機確認待ち）| TASK-010 |
+| TASK-013 | デバッグ表示（FPS・画面サイズ・位置・敵数）| 1 | P2 | S | Review（CI 済み・実機確認待ち）| TASK-010 |
+| TASK-014 | Phase 1 手動プレイテストと記録 | 1 | P1 | S | Ready（オーナー作業。owner-checklist 1〜2 章）| TASK-011〜013, 015, 016 |
+| TASK-015 | タッチ入力（フローティング仮想スティック）| 1 | P1 | S | Review（CI 済み・実機確認待ち）| TASK-009 |
+| TASK-016 | GitHub Actions で Web 版を書き出し Pages で公開 | 1 | P1 | M | Done（push ごとに自動公開。iPhone で表示確認済み）| TASK-004 |
+| TASK-020 | 弾性区間（自然長〜最大長で引き戻す）| 2 | P1 | M | Review（CI 済み・手触りは実機確認待ち）| TASK-014 |
+| TASK-021 | 限界時の方式切替（drag / block）| 2 | P1 | S | Review（同上）| TASK-020 |
+| TASK-022 | 紐パラメータの実行時調整パネル（TUNE）| 2 | P2 | S | Review（CI 済み・スマホ操作は実機確認待ち）| TASK-020 |
+| TASK-023 | 慣性ハブの試作（ADR-002 案 B）| 2 | P2 | M | Review（CI 済み・手触りは実機確認待ち）| TASK-020 |
+| TASK-024 | Phase 2 比較プレイテストと方式決定 | 2 | P1 | S | Ready（オーナー作業。owner-checklist 3 章）| TASK-020〜023 |
+| TASK-025 | 仮の仮想ツインスティック（Phase 2b）| 2b | P1 | M | Review（TASK-015 で実装済み。実機確認待ち）| TASK-024 |
+| TASK-026 | Android 実機での操作スパイク評価 | 2b | P1 | M | Backlog（Android 端末の有無が未確認。iPhone の Web 版で代替）| TASK-025 |
+| TASK-030 | 敵・武器の定義データ（EnemyDef / WeaponDef と .tres）| 3 | P1 | S | Review（CI 済み）| TASK-024 |
+| TASK-031 | RunState: 共有 HP・経過時間・ゲームオーバー・クリア | 3 | P1 | S | Review（CI 済み）| TASK-030 |
+| TASK-032 | Enemy: 追跡・接触ダメージ・被ダメージと撃破 | 3 | P1 | M | Review（CI 済み・実機確認待ち）| TASK-031 |
+| TASK-033 | EnemySpawner: 画面外から時間とともに増えて出現 | 3 | P1 | S | Review（CI 済み・実機確認待ち）| TASK-032 |
+| TASK-034 | Weapon: Blaster（弾）と Shockwave（範囲）の自動攻撃 | 3 | P1 | M | Review（CI 済み・実機確認待ち）| TASK-032 |
+| TASK-035 | RopeAttack: 張った紐に触れた敵へのダメージ | 3 | P1 | M | Review（CI 済み・実機確認待ち）| TASK-032, 021 |
+| TASK-040 | XpOrb: 経験値オーブの落下・吸い寄せ・取得 | 4 | P1 | S | Review（CI 済み・実機確認待ち）| TASK-032 |
+| TASK-041 | UpgradeDef / UpgradePool（13 種）/ UpgradePicker | 4 | P1 | M | Review（CI 済み）| TASK-040 |
+| TASK-042 | MenuPanel とレベルアップの 3 択（ゲーム一時停止）| 4 | P1 | M | Review（CI 済み・実機確認待ち）| TASK-041 |
+| TASK-050 | HUD: HP・経験値・残り時間・レベル・撃破数 | 5 | P1 | S | Review（CI 済み・実機確認待ち）| TASK-031 |
+| TASK-051 | タイトル画面 | 5 | P1 | S | Review（CI 済み・実機確認待ち）| TASK-042 |
+| TASK-052 | ポーズ・結果画面・リトライ | 5 | P1 | S | Review（CI 済み・実機確認待ち）| TASK-042 |
+| TASK-053 | 通しプレイの統合テスト（ボットが勝利/敗北まで自動プレイ）| 5 | P1 | M | Done（CI で成功）| TASK-052 |
+| TASK-060 | 縦持ち・横持ちの確定とスマホ操作の仕上げ（Phase 6）| 6 | P1 | M | Backlog（U-01 の決定後）| owner-checklist |
+| TASK-070 | 見た目・効果音・BGM・キャラ/武器/敵/強化の追加（Phase 7）| 7 | P2 | XL | Backlog（素材の方針が未決定。分割してから着手）| TASK-060 |
+| TASK-080 | Android 向けビルドとテスト（Phase 8）| 8 | P2 | L | Backlog（Android SDK・署名キー。署名キーは公開リポジトリに入れない）| TASK-070 |
+| TASK-090 | iOS 向けビルドとテスト（Phase 9）| 9 | P2 | L | Backlog（Mac と Xcode が必要。有無が未確認）| TASK-070 |
+| TASK-100 | 公開準備（Phase 10）| 10 | P3 | L | Backlog | TASK-080, 090 |
 
-Phase 3 以降のタスクは、Phase 2 の結果で内容が変わるため、Phase 2 完了時に分割して登録する（候補: 敵の表示、敵の追跡、出現管理、接触ダメージ、共有 HP、武器 A、武器 B、紐攻撃判定、再ヒット間隔、XP オーブ、レベル計算、強化 UI、強化適用 …）。
+Phase 3〜5 は、オーナーの指示（「計画済みの範囲を一通り実装して、あとから確認すべき点をまとめる」）で、Phase 2 の手触り検証の結果を待たずに先行して実装した。紐の方式（drag/block・弾性・慣性）は仮の既定値で動いており、TASK-024 の結果で変わる可能性がある。変わっても紐の計算は `RopeModel` / `Rope` / `RopeConfig` に閉じているため、戦闘側への影響は小さい。
 
 ---
 
@@ -121,3 +141,24 @@ Phase 3 以降のタスクは、Phase 2 の結果で内容が変わるため、P
 - 実施内容: TC-101〜106 をオーナーが実施。H-03, H-04 について一言感想を記録
 - 完了条件: test-results に結果、learning-log に学び、Phase 2 の調整方針を決定
 - **オーナーのプレイ確認が必要**
+
+
+### TASK-030〜053（Phase 3〜5）の完了条件と確認方法
+
+詳細な設計は [detailed-design.md](../design/detailed-design.md)、確認項目は [owner-checklist.md](../testing/owner-checklist.md)。
+
+| ID | 完了条件 | 自動テスト（CI）| 実機で確認すること |
+|---|---|---|---|
+| TASK-030 | `.tres` を `load` でき、敵 3 種・武器 2 種を定義できる | test_combat | — |
+| TASK-031 | 共有 HP が 0 で敗北、制限時間でクリア、`finished` が 1 回だけ出る | test_combat | HUD の表示 |
+| TASK-032 | 敵が近いキャラへ進み、接触で間隔つきにダメージ、撃破で `died` | test_combat | 見た目、重なり |
+| TASK-033 | 画面の外に出現し、時間で間隔が縮み種類が増える | test_combat, test_gameplay | 難易度（5 章）|
+| TASK-034 | 最近い敵に撃つ／範囲攻撃、クールダウンを守る、標的がいないと待つ | test_combat | 気持ちよさ |
+| TASK-035 | 張った紐の上の敵だけに、再ヒット間隔つきでダメージ。たるんだ紐では無効 | test_combat, test_gameplay | H-02（4 章）|
+| TASK-040 | 撃破でオーブが落ち、近づくと吸い寄せ、触れると経験値 | test_progression, test_gameplay | 見た目 |
+| TASK-041 | 13 種すべてが Main に適用でき、重複なし、上限を守る、乱数を固定すれば再現する | test_progression | 選びたくなるか（H-06）|
+| TASK-042 | レベルアップでゲームが止まり 3 択、選ぶと効果、複数レベルは続けて選ぶ | test_progression, test_gameplay | 押しやすさ |
+| TASK-050 | HP・経験値・時間・レベルが更新される | （起動の確認のみ）| 見やすさ（6 章）|
+| TASK-051 | タイトルが出て START でゲームへ | test_progression | 見た目 |
+| TASK-052 | ポーズ／結果（RETRY / TITLE） | test_progression, test_gameplay | 動作 |
+| TASK-053 | ボットが 25 秒のランを勝利まで、囲まれて敗北まで通せる | test_gameplay | — |

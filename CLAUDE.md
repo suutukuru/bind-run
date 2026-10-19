@@ -36,9 +36,9 @@ Godot 4.7.x / GDScript / 外部アドオンなし。Godot プロジェクトは�
 
 ```
 project.godot
-scenes/<分類>/<名前>.tscn と同名 .gd   … シーンとその専用スクリプト
-scripts/<分類>/*.gd                   … シーンに属さないスクリプト（入力、純粋計算、Resource 定義）
-data/<分類>/*.tres                    … 定義データ（Resource）
+scenes/<分類>/<名前>.tscn と同名 .gd   … シーンとその専用スクリプト（main, characters, rope, enemies, weapons, camera, ui, title, debug）
+scripts/<分類>/*.gd                   … シーンに属さないスクリプト（input, rope（純粋計算・設定）, game（RunState・強化）, data（Resource 定義）, ui）
+data/<分類>/*.tres                    … 定義データ（rope, enemies, weapons, upgrades）
 tests/run_tests.gd, tests/test_*.gd   … 単体テスト
 docs/                                 … ドキュメント（.gdignore で Godot の読み込み対象外）
 ```
@@ -49,7 +49,11 @@ docs/                                 … ドキュメント（.gdignore で God
 - 変数・引数・戻り値には型を付ける（`var speed: float = 220.0`、`func f(x: Vector2) -> Vector2:`）。
 - 調整したい値は `@export` か Resource に置き、マジックナンバーを避ける。
 - 計算ロジックはノードから切り出し、静的関数でテスト可能にする（例: `RopeModel`）。
-- 処理順が重要なノードは `process_priority` を明示する（入力 -10 → キャラ 0 → 紐 10）。
+- 処理順が重要なノードは `process_priority` を明示する（キーボード -10 → タッチ -9 → キャラ・敵・武器 0 → 紐 10 → 紐攻撃 11）。
+- **クラス自身の `enum` を変数の型にしない**（ゲーム起動時の読み込み順でスクリプトが読み込めなくなる。ADR-011）。int の定数 + `@export_enum` を使う。
+- **型付きのノード参照を `@export` しない**。`NodePath` を `@export` して `_ready()` で `get_node_or_null()` する（シーンから解決されないことがある）。
+- ゲーム内に出す文字は**英語のみ**（Web 版の標準フォントに日本語がない。日本語化はオーナーに相談してから。ADR-013）。UI の大きさは `UiScale.unit()`（画面の短辺の 1%）で決める。
+- 書き出し後のビルドで `DirAccess` によるフォルダ走査に頼らない（`.tres` が `.remap` に変わる）。一覧は `preload` で持つ。
 - コメントは「なぜそうしたか」を書く。日本語で可。
 
 ## 設計方針
@@ -63,7 +67,8 @@ docs/                                 … ドキュメント（.gdignore で God
 - 計算・ルールは単体テスト（`godot --headless --path . --script res://tests/run_tests.gd`）。
 - 操作感・面白さはオーナーの手動プレイテスト。
 - **このクラウド環境には Godot がなく、取得もできない（R-08）。** 代わりに GitHub Actions（`.github/workflows/ci.yml`）で Godot 4.7.2 が動く。push 後に実行結果とログを GitHub の Actions 用ツールで読み、失敗したら原因を調べて直す。
-- CI で確認できるのは import・単体テスト・書き出しまで。画面を見る確認や操作感は、オーナーの実機（スマホのブラウザ等）で行う。CI が成功しても「動作確認済み」とは書かない。実行していないテストを実施済みと書かない。
+- CI で確認できるのは import・単体テスト・通しプレイ（ボット）・起動のスモーク実行・書き出しまで。画面を見る確認や操作感は、オーナーの実機（スマホのブラウザ等）で行う。CI が成功しても「動作確認済み」とは書かない。実行していないテストを実施済みと書かない。
+- オーナーの確認項目は `docs/testing/owner-checklist.md` に集約している。機能を足したら、確認が必要な点をそこへ追記する。
 
 ## ドキュメントの更新ルール
 
@@ -77,7 +82,8 @@ docs/                                 … ドキュメント（.gdignore で God
 - 1 タスク = 1 つの成果 = 1 コミットを目安にする。一度に多くのファイルを変更しない。
 - Done の条件: 完了条件を満たし、必要なテスト結果が記録されていること。プレイ確認が必要なものはオーナー確認まで Review に留める。
 
-## 未解決の課題
+## 現在の状況と未解決の課題
 
-- 画面の向き（縦/横）、HP 共有か個別か、Mac の有無 → `requirements.md` の未決定事項 U-01〜08
-- 限界時の方式・弾性・慣性ハブ → Phase 2 で検証
+- Phase 5 まで実装済み（CI で 76 件成功）。**実機での確認待ち**（`docs/testing/owner-checklist.md`）。
+- オーナーの判断待ち: 画面の向き（U-01）、HP 共有か個別か（U-05）、日本語化（フォント同梱の可否）、素材の方針、Mac / Android 端末の有無（U-08）。
+- 紐の方式（drag / block）・弾性・慣性ハブは仮の既定値。調整パネル（TUNE）での比較結果を待つ。
