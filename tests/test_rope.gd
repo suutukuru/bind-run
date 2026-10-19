@@ -70,3 +70,29 @@ func test_one_sided_pull_drags_the_other() -> void:
 	check_true(a.global_position.distance_to(b.global_position) <= rope.config.max_radius * 2.0 + MAX_DISTANCE_TOLERANCE, "never exceeds 2R")
 	check_true(b.global_position.x > 0.0, "B was dragged along")
 	_free_main(main)
+
+
+func test_stretch_color_runs_white_yellow_red() -> void:
+	check_eq(Rope.color_for_stretch(0.0), Color.WHITE, "slack is white")
+	check_eq(Rope.color_for_stretch(0.5), Color.YELLOW, "half is yellow")
+	check_eq(Rope.color_for_stretch(1.0), Color.RED, "taut is red")
+	check_eq(Rope.color_for_stretch(5.0), Color.RED, "clamped above 1")
+
+
+func test_show_hub_does_not_change_the_result() -> void:
+	# FR-008 / AC-003: ハブの表示を切り替えても、同じ入力から同じ位置になる
+	var results: Array[Vector2] = []
+	for visible_hub: bool in [true, false]:
+		var main: Node = _make_main()
+		var rope: Rope = main.get_node("Rope") as Rope
+		var a: Character = main.get_node("CharacterA") as Character
+		var b: Character = main.get_node("CharacterB") as Character
+		rope.show_hub = visible_hub
+		a.global_position = Vector2(0, 0)
+		b.global_position = Vector2(400, 0)
+		rope.step()
+		results.append(a.global_position)
+		results.append(b.global_position)
+		_free_main(main)
+	check_vec_near(results[0], results[2], "A position")
+	check_vec_near(results[1], results[3], "B position")

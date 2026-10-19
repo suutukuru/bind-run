@@ -6,6 +6,11 @@ extends Node2D
 
 @export var member_paths: Array[NodePath] = []
 @export var config: RopeConfig
+## ハブの点を描くか。見た目だけの設定で、ロジックは参照しない（FR-008）
+@export var show_hub: bool = true:
+	set(value):
+		show_hub = value
+		queue_redraw()
 
 ## 最新のハブ位置。表示の有無に関係なく、ロジックはこの値だけを使う（FR-008）
 var hub: Vector2 = Vector2.ZERO
@@ -17,6 +22,16 @@ var _members: Array[Character] = []
 
 func _init() -> void:
 	process_priority = 10
+	# 紐はキャラクターの下に描く
+	z_index = -1
+
+
+## 伸び率に応じた紐の色: 白（たるみ）→ 黄 → 赤（伸びきり）
+static func color_for_stretch(ratio: float) -> Color:
+	var t: float = clampf(ratio, 0.0, 1.0)
+	if t < 0.5:
+		return Color.WHITE.lerp(Color.YELLOW, t * 2.0)
+	return Color.YELLOW.lerp(Color.RED, (t - 0.5) * 2.0)
 
 
 func _ready() -> void:
@@ -54,3 +69,16 @@ func step() -> void:
 		stretch_ratios[i] = RopeModel.stretch_ratio(
 			fixed.distance_to(hub), config.natural_radius, config.max_radius
 		)
+	queue_redraw()
+
+
+func _draw() -> void:
+	if config == null or stretch_ratios.size() != _members.size():
+		return
+	var hub_local: Vector2 = to_local(hub)
+	for i: int in _members.size():
+		var ratio: float = stretch_ratios[i]
+		# 張るほど細く・赤くして、限界が近いことを見た目で伝える
+		draw_line(hub_local, to_local(_members[i].global_position), color_for_stretch(ratio), 6.0 - 3.0 * ratio, true)
+	if show_hub:
+		draw_circle(hub_local, 5.0, Color.WHITE)
