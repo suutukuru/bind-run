@@ -15,7 +15,7 @@
 | TASK-004 | Godot プロジェクトの骨組みを作る | 1 | P1 | S | Review（実行確認待ち） | — |
 | TASK-005 | 自作テストランナーを作る | 1 | P1 | S | Review（CI 結果待ち）| TASK-004 |
 | TASK-006 | RopeModel（純粋計算）と単体テスト | 1 | P1 | S | Review（CI 結果待ち）| TASK-005 |
-| TASK-007 | 2 人のキャラクターを表示する | 1 | P1 | S | Backlog | TASK-004 |
+| TASK-007 | 2 人のキャラクターを表示する | 1 | P1 | S | Review（CI 結果待ち。画面表示は未確認）| TASK-004 |
 | TASK-008 | 入力アクションと KeyboardMoveInput（A の移動） | 1 | P1 | S | Backlog | TASK-007 |
 | TASK-009 | B の移動（同じ仕組みを設定違いで使う） | 1 | P1 | XS | Backlog | TASK-008 |
 | TASK-010 | Rope ノード: ハブ計算と最大長の拘束 | 1 | P1 | M | Backlog | TASK-006, 009 |
