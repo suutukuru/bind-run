@@ -37,6 +37,8 @@ const page = await context.newPage();
 const logs = [];
 page.on('console', (m) => logs.push(`[${m.type()}] ${m.text()}`));
 page.on('pageerror', (e) => logs.push(`[pageerror] ${e.message}`));
+const packRequests = [];
+page.on('request', (r) => { if (r.url().includes('.pck')) packRequests.push(r.url()); });
 
 const failures = [];
 const results = [];
@@ -85,6 +87,9 @@ try {
     if (title.bright > 500) break;
   }
   check(title.bright > 500, `title screen draws bright text (bright pixels: ${title.bright})`);
+
+  // ゲームの pack を、デプロイごとに変わる URL（?v=...）で取りに行っていること（古いキャッシュを使わせないため）
+  check(packRequests.some((u) => /\.pck\?v=[0-9a-f]{7,}/.test(u)), `the game pack is requested with a cache-busting query (${packRequests.join(', ') || 'no .pck request'})`);
 
   // Enter で START（先頭のボタンにフォーカスがある）
   await page.keyboard.press('Enter');
