@@ -35,7 +35,14 @@ jobs:
           godot --version
 
       - name: Import project
-        run: godot --headless --path . --import
+        run: |
+          set +e
+          out=$(godot --headless --path . --import 2>&1)
+          rc=$?
+          set -e
+          # 進捗行（[ 50% ] ...）は読みにくいので省き、エラーや警告だけを残す
+          echo "$out" | grep -vE '\[ *[0-9]+% \]|DONE|^$' || true
+          [ "$rc" -eq 0 ]
 
       - name: Run unit tests
         if: ${{ hashFiles('tests/run_tests.gd') != '' }}
@@ -75,7 +82,12 @@ jobs:
         run: |
           cp ci/export_presets.web.cfg export_presets.cfg
           mkdir -p build/web
-          godot --headless --path . --export-release "Web" build/web/index.html
+          set +e
+          out=$(godot --headless --path . --export-release "Web" build/web/index.html 2>&1)
+          rc=$?
+          set -e
+          echo "$out" | grep -vE '\[ *[0-9]+% \]|DONE|^$' || true
+          [ "$rc" -eq 0 ]
           ls -la build/web
 
       - name: Check the build is single-threaded (no SharedArrayBuffer headers needed)
