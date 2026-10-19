@@ -41,7 +41,8 @@ func _initialize() -> void:
 		for method_name: String in method_names:
 			total += 1
 			suite.failures.clear()
-			suite.call(method_name)
+			# await: テストが物理フレームを待つ（統合テスト）場合も、終わるまで待つ。待たない関数は即座に戻る
+			await suite.call(method_name)
 			if suite.failures.is_empty():
 				print("PASS  %s::%s" % [file_name, method_name])
 			else:

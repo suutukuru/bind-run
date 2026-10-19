@@ -39,7 +39,7 @@ jobs:
 
       - name: Run unit tests
         if: ${{ hashFiles('tests/run_tests.gd') != '' }}
-        run: godot --headless --path . --script res://tests/run_tests.gd
+        run: godot --headless --fixed-fps 60 --path . --script res://tests/run_tests.gd
 
       - name: Test runner self-check (a failing test must give exit code 1)
         if: ${{ hashFiles('tests/run_tests.gd') != '' }}
