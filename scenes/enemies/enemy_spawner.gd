@@ -1,0 +1,112 @@
+class_name EnemySpawner
+extends Node2D
+## 時間とともに増える敵を、画面の外から出現させる。出現した敵はこのノードの子になる。
+
+## 敵の定義（[0] Grunt, [1] Runner, [2] Tank の順）
+@export var defs: Array = []
+@export var camera_path: NodePath
+@export var run_state_path: NodePath
+@export var base_interval: float = 1.1
+@export var min_interval: float = 0.3
+## 出現間隔が min_interval に達するまでの時間（秒）
+@export var ramp_seconds: float = 240.0
+@export var max_alive: int = 180
+## 経験値オーブを拾える距離（強化「Magnet」の対象）
+@export var orb_pickup_radius: float = 70.0
+## 0 以外なら乱数を固定する（テスト用）
+@export var seed_value: int = 0
+
+var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+
+var _camera: FollowCamera
+var _run_state: RunState
+var _timer: float = 1.0
+var _alive: int = 0
+
+
+## 経過時間 t での出現間隔（秒）。時間とともに短くなる
+static func interval_at(t: float, base: float, min_value: float, ramp: float) -> float:
+	if ramp <= 0.0:
+		return min_value
+	return lerpf(base, min_value, clampf(t / ramp, 0.0, 1.0))
+
+
+## 1 回の出現で出す数。1 分半ごとに 1 体増える
+static func count_at(t: float) -> int:
+	return 1 + int(t / 90.0)
+
+
+## 敵の種類の重み [Grunt, Runner, Tank]。Runner は 30 秒後、Tank は 90 秒後から混ざる
+static func weights_at(t: float) -> PackedFloat32Array:
+	return PackedFloat32Array([1.0, 0.0 if t < 30.0 else 0.5, 0.0 if t < 90.0 else 0.25])
+
+
+## 重みに従って種類を選ぶ。roll は 0.0 以上 1.0 未満の乱数
+static func pick_index(weights: PackedFloat32Array, roll: float) -> int:
+	var total: float = 0.0
+	for w: float in weights:
+		total += w
+	var target: float = roll * total
+	var acc: float = 0.0
+	for i: int in weights.size():
+		acc += weights[i]
+		if target < acc:
+			return i
+	return 0
+
+
+func _ready() -> void:
+	_camera = get_node_or_null(camera_path) as FollowCamera
+	_run_state = get_node_or_null(run_state_path) as RunState
+	if seed_value != 0:
+		rng.seed = seed_value
+	else:
+		rng.randomize()
+
+
+func _physics_process(delta: float) -> void:
+	if _run_state != null and not _run_state.running:
+		return
+	_timer -= delta
+	if _timer > 0.0:
+		return
+	var t: float = _run_state.elapsed if _run_state != null else 0.0
+	for i: int in count_at(t):
+		_spawn_one(t)
+	_timer = interval_at(t, base_interval, min_interval, ramp_seconds)
+
+
+func spawn_enemy(def: EnemyDef, pos: Vector2) -> Enemy:
+	var enemy: Enemy = Enemy.new()
+	enemy.def = def
+	enemy.position = pos
+	enemy.died.connect(_on_enemy_died)
+	add_child(enemy)
+	_alive += 1
+	return enemy
+
+
+func _spawn_one(t: float) -> void:
+	if _alive >= max_alive or defs.is_empty():
+		return
+	var index: int = pick_index(weights_at(t), rng.randf())
+	var def: EnemyDef = defs[mini(index, defs.size() - 1)] as EnemyDef
+	var center: Vector2 = Vector2.ZERO
+	var radius: float = 700.0
+	if _camera != null:
+		center = _camera.global_position
+		# 画面の外に出すため、見えている範囲の対角線の半分より少し遠くを使う
+		radius = _camera.visible_world_size().length() * 0.5 + 80.0
+	spawn_enemy(def, center + Vector2.from_angle(rng.randf() * TAU) * radius)
+
+
+func _on_enemy_died(enemy: Enemy) -> void:
+	_alive = maxi(0, _alive - 1)
+	if _run_state != null:
+		_run_state.kills += 1
+	_drop_reward(enemy)
+
+
+# 経験値オーブの出現は TASK-040 で追加する
+func _drop_reward(_enemy: Enemy) -> void:
+	pass

@@ -23,6 +23,15 @@ static func velocity_for(intent: Vector2, speed: float) -> Vector2:
 	return intent.limit_length(1.0) * speed
 
 
+func _init() -> void:
+	# 敵や紐より手前に描く
+	z_index = 1
+
+
+func _ready() -> void:
+	add_to_group("characters")
+
+
 func _physics_process(_delta: float) -> void:
 	velocity = velocity_for(move_intent, move_speed)
 	move_and_slide()

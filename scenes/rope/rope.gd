@@ -13,7 +13,11 @@ extends Node2D
 		queue_redraw()
 
 ## 紐攻撃が有効な間 true（RopeAttack が書く）。見た目の強調にだけ使う
-var attack_active: bool = false
+var attack_active: bool = false:
+	set(value):
+		if value != attack_active:
+			attack_active = value
+			queue_redraw()
 
 ## 最新のハブ位置。表示の有無に関係なく、ロジックはこの値だけを使う（FR-008）
 var hub: Vector2 = Vector2.ZERO
