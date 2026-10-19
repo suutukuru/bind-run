@@ -11,9 +11,9 @@ const DRAG: int = 0
 const BLOCK: int = 1
 
 ## 各キャラとハブの最大距離。2 人のとき、A〜B の最大距離はこの 2 倍
-@export var max_radius: float = 160.0
+@export var max_radius: float = 240.0
 ## これより短い間は「たるみ」（引き戻しなし・伸び率 0）
-@export var natural_radius: float = 100.0
+@export var natural_radius: float = 150.0
 @export_enum("Drag", "Block") var limit_mode: int = DRAG
 ## 自然長を超えた分を引き戻す強さ（1/秒）。0 で引き戻しなし
 @export var stiffness: float = 3.0

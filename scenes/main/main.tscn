@@ -20,12 +20,17 @@
 [ext_resource type="Resource" path="res://data/enemies/tank.tres" id="18_tank"]
 [ext_resource type="Script" path="res://scenes/ui/hud.gd" id="19_hud"]
 [ext_resource type="Script" path="res://scenes/ui/menu_panel.gd" id="20_menu"]
+[ext_resource type="Script" path="res://scenes/world/grid_background.gd" id="21_grid"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
 
 [node name="RunState" type="Node" parent="."]
 script = ExtResource("10_run")
+
+[node name="Grid" type="Node2D" parent="."]
+script = ExtResource("21_grid")
+camera_path = NodePath("../Camera")
 
 [node name="CharacterA" parent="." instance=ExtResource("2_character")]
 position = Vector2(560, 360)
@@ -91,6 +96,7 @@ rope_path = NodePath("../Rope")
 script = ExtResource("9_tuning")
 rope_path = NodePath("../Rope")
 overlay_path = NodePath("../DebugOverlay")
+camera_path = NodePath("../Camera")
 
 [node name="Hud" type="CanvasLayer" parent="."]
 script = ExtResource("19_hud")

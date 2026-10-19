@@ -32,13 +32,13 @@ func test_far_apart_characters_are_pulled_to_two_radii() -> void:
 	var b: Character = main.get_node("CharacterB") as Character
 	rope.config.stiffness = 0.0  # 弾性なしの純粋な最大長の拘束を確かめる
 	a.global_position = Vector2(0, 0)
-	b.global_position = Vector2(400, 0)
+	b.global_position = Vector2(600, 0)
 	rope.step()
 	var limit: float = rope.config.max_radius * 2.0
 	check_near(a.global_position.distance_to(b.global_position), limit, "distance", MAX_DISTANCE_TOLERANCE)
-	check_vec_near(rope.hub, Vector2(200, 0), "hub stays at the midpoint")
-	check_vec_near(a.global_position, Vector2(40, 0), "A")
-	check_vec_near(b.global_position, Vector2(360, 0), "B")
+	check_vec_near(rope.hub, Vector2(300, 0), "hub stays at the midpoint")
+	check_vec_near(a.global_position, Vector2(60, 0), "A")
+	check_vec_near(b.global_position, Vector2(540, 0), "B")
 	check_near(rope.stretch_ratios[0], 1.0, "fully stretched")
 	_free_main(main)
 
@@ -90,7 +90,7 @@ func test_show_hub_does_not_change_the_result() -> void:
 		var b: Character = main.get_node("CharacterB") as Character
 		rope.show_hub = visible_hub
 		a.global_position = Vector2(0, 0)
-		b.global_position = Vector2(400, 0)
+		b.global_position = Vector2(600, 0)
 		rope.step()
 		results.append(a.global_position)
 		results.append(b.global_position)
@@ -186,3 +186,10 @@ func test_inertial_hub_lags_behind_the_midpoint() -> void:
 		rope.step()
 	check_true(rope.hub.distance_to(Vector2(60, 0)) < 1.0, "hub catches up")
 	_free_main(main)
+
+
+func test_grid_line_indices_cover_the_visible_range() -> void:
+	check_eq(GridBackground.line_indices(-150.0, 250.0, 100.0), [-1, 0, 1, 2] as Array[int], "negative to positive")
+	check_eq(GridBackground.line_indices(10.0, 90.0, 100.0).size(), 0, "no line inside one cell")
+	check_eq(GridBackground.line_indices(0.0, 100.0, 100.0), [0, 1] as Array[int], "edges are included")
+	check_eq(GridBackground.line_indices(0.0, 100.0, 0.0).size(), 0, "zero size is safe")

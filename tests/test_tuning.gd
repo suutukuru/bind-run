@@ -43,3 +43,12 @@ func test_sliders_start_at_the_current_values() -> void:
 	var slider: HSlider = panel._sliders["max_radius"] as HSlider
 	check_near(slider.value, rope.config.max_radius, "max_radius slider")
 	_free_main(main)
+
+
+func test_view_size_slider_changes_the_camera() -> void:
+	var main: Node = _make_main()
+	var panel: TuningPanel = main.get_node("TuningPanel") as TuningPanel
+	var camera: FollowCamera = main.get_node("Camera") as FollowCamera
+	panel.set_view_size(1200.0)
+	check_near(camera.view_short_side, 1200.0, "camera view size")
+	_free_main(main)

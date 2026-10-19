@@ -6,11 +6,12 @@ extends CanvasLayer
 
 @export var rope_path: NodePath
 @export var overlay_path: NodePath
+@export var camera_path: NodePath
 
 ## [プロパティ名, 表示名, 最小, 最大, 刻み]
 const SLIDERS: Array = [
-	["max_radius", "Max length", 60.0, 400.0, 5.0],
-	["natural_radius", "Slack length", 0.0, 300.0, 5.0],
+	["max_radius", "Max length", 60.0, 600.0, 5.0],
+	["natural_radius", "Slack length", 0.0, 450.0, 5.0],
 	["stiffness", "Elastic pull", 0.0, 12.0, 0.5],
 	["hub_follow_rate", "Hub inertia", 0.0, 20.0, 0.5],
 	["attack_damage", "Rope damage", 1.0, 60.0, 1.0],
@@ -19,18 +20,22 @@ const SLIDERS: Array = [
 
 var _rope: Rope
 var _overlay: DebugOverlay
+var _camera: FollowCamera
 var _root: Control
 var _toggle: Button
 var _panel: PanelContainer
 var _mode: OptionButton
 var _sliders: Dictionary = {}
 var _value_labels: Dictionary = {}
+var _view_slider: HSlider
+var _view_label: Label
 
 
 func _ready() -> void:
 	layer = 90
 	_rope = get_node_or_null(rope_path) as Rope
 	_overlay = get_node_or_null(overlay_path) as DebugOverlay
+	_camera = get_node_or_null(camera_path) as FollowCamera
 	if _rope == null or _rope.config == null:
 		push_error("TuningPanel: Rope が見つかりません: %s" % rope_path)
 		return
@@ -43,6 +48,13 @@ func _ready() -> void:
 func set_param(property: String, value: float) -> void:
 	_rope.config.set(property, value)
 	_update_label(property)
+
+
+## 画面の短辺に映すワールドの長さ（視界の広さ）を変える
+func set_view_size(value: float) -> void:
+	_camera.view_short_side = value
+	if _view_label != null:
+		_view_label.text = "View size %d" % int(value)
 
 
 func set_limit_mode(index: int) -> void:
@@ -85,6 +97,22 @@ func _build() -> void:
 		row.add_child(slider)
 		_update_label(property)
 
+	if _camera != null:
+		var view_row: HBoxContainer = HBoxContainer.new()
+		box.add_child(view_row)
+		_view_label = Label.new()
+		view_row.add_child(_view_label)
+		_view_slider = HSlider.new()
+		_view_slider.min_value = 400.0
+		_view_slider.max_value = 1600.0
+		_view_slider.step = 50.0
+		_view_slider.value = _camera.view_short_side
+		_view_slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_view_slider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		_view_slider.value_changed.connect(set_view_size)
+		view_row.add_child(_view_slider)
+		set_view_size(_camera.view_short_side)
+
 	_mode = OptionButton.new()
 	_mode.add_item("Limit: drag partner")
 	_mode.add_item("Limit: block")
@@ -125,6 +153,9 @@ func _layout() -> void:
 	_toggle.custom_minimum_size = Vector2(12.0 * u, 6.0 * u)
 	_toggle.position = Vector2(view.x - 12.0 * u - margin, top)
 	_panel.position = Vector2(view.x - 58.0 * u - margin, top + 7.5 * u)
+	if _view_slider != null:
+		_view_slider.custom_minimum_size = Vector2(26.0 * u, 5.0 * u)
+		_view_label.custom_minimum_size = Vector2(28.0 * u, 0)
 	for property: String in _sliders:
 		(_sliders[property] as HSlider).custom_minimum_size = Vector2(26.0 * u, 5.0 * u)
 		(_value_labels[property] as Label).custom_minimum_size = Vector2(28.0 * u, 0)

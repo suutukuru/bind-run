@@ -167,10 +167,10 @@ func test_rope_attack_hits_enemies_on_a_taut_rope_only() -> void:
 	var b: Character = main.get_node("CharacterB") as Character
 	rope.config.stiffness = 0.0
 	a.global_position = Vector2(0, 0)
-	b.global_position = Vector2(400, 0)
-	rope.hub = Vector2(200, 0)
-	var on_rope: Enemy = _spawn(main, Vector2(100, 0))
-	var off_rope: Enemy = _spawn(main, Vector2(100, 200))
+	b.global_position = Vector2(600, 0)
+	rope.hub = Vector2(300, 0)
+	var on_rope: Enemy = _spawn(main, Vector2(150, 0))
+	var off_rope: Enemy = _spawn(main, Vector2(150, 200))
 	rope.step()
 	check_true(rope.stretch_ratios[0] >= rope.config.attack_threshold, "taut")
 	attack.step(0.016)

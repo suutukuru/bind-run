@@ -44,7 +44,7 @@ func test_multiply_and_add_upgrades_change_the_right_values() -> void:
 	check_near(state.max_hp, 120.0, "max hp")
 	check_near(state.hp, 120.0, "healed by the gained amount")
 	var shared: RopeConfig = load("res://data/rope/default_rope_config.tres") as RopeConfig
-	check_near(shared.max_radius, 160.0, "the shared .tres is untouched")
+	check_near(shared.max_radius, 240.0, "the shared .tres is untouched")
 	_free_main(main)
 
 

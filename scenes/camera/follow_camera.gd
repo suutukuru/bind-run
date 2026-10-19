@@ -6,7 +6,7 @@ extends Camera2D
 
 @export var rope_path: NodePath
 ## 画面の短辺に映すワールド座標の長さ（px）
-@export var view_short_side: float = 600.0
+@export var view_short_side: float = 900.0
 
 var _rope: Rope
 
