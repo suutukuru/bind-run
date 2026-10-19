@@ -54,11 +54,12 @@ tests/
 
 | 変数 | 説明 |
 |---|---|
-| `@export target_path: NodePath` | 動かすキャラ |
+| `@export target_path: NodePath` | 動かすキャラの場所。`_ready` で `target: Character` に解決する（型付きノード参照はシーンから解決されなかったため） |
 | `@export action_prefix: String` | `"a"` なら `a_left/a_right/a_up/a_down` を読む |
 
 - `_physics_process`: `target.move_intent = Input.get_vector(prefix+"_left", prefix+"_right", prefix+"_up", prefix+"_down")`
 - `process_priority = -10`（キャラより先）
+- InputMap は project.godot ではなく `InputActions.register()`（`scripts/input/input_actions.gd`）で実行時に登録する。理由: テストで検証でき、手書きの書式ミスで起動できなくなる事故を避けられるため（Main の `_ready` で呼ぶ）
 
 InputMap（`project.godot` に定義）:
 
@@ -113,8 +114,7 @@ B: 距離200 > 160 → (360,0) に補正
 - `_physics_process`:
   1. members の `global_position` を集めて `hub_position()`
   2. 各メンバーに `constrain()` を適用し、補正があればそのキャラの `global_position` を更新
-  3. 補正したキャラの `velocity` から外向き成分を取り除く（次フレームでの押し付けを防ぐ）
-  4. 伸び率を計算 → `queue_redraw()`
+    3. 伸び率を計算 → `queue_redraw()`（描画は TASK-011）
 - `_draw()`: 各メンバー〜ハブに線。色は伸び率で 白 → 黄 → 赤、線の太さは張るほど細く。`show_hub` のときハブに小さな点。
 - Rope 自身は原点に置き、描画座標は `to_local()` で変換する。
 - members が 2 未満、または config 未設定なら `push_error` して処理しない。
@@ -122,7 +122,7 @@ B: 距離200 > 160 → (360,0) に補正
 ### 2.6 main.gd
 
 - `Camera2D` の位置を毎フレーム `rope.hub` に合わせる（2 人が常に収まる）。ズームは固定。
-- 初期配置: A=(-80, 0)、B=(80, 0)。
+- 初期配置: A=(560, 360)、B=(720, 360)（カメラ追従を入れる TASK-012 までは画面中央付近。カメラを入れたら見直す）。
 
 ### 2.7 DebugOverlay
 
