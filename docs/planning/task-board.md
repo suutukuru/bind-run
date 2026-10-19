@@ -22,7 +22,7 @@
 | TASK-011 | 紐とハブの描画、ハブ表示切替 | 1 | P1 | S | Review（CI 結果待ち。見た目は未確認）| TASK-010 |
 | TASK-012 | カメラをハブに追従させる | 1 | P1 | XS | Backlog | TASK-010 |
 | TASK-013 | デバッグ表示（FPS・距離・伸び率） | 1 | P2 | S | Backlog | TASK-010 |
-| TASK-015 | 最小のタッチ入力（TouchMoveInput）| 1 | P1 | S | Backlog | TASK-009 |
+| TASK-015 | 最小のタッチ入力（TouchMoveInput）| 1 | P1 | S | Review（CI 結果待ち。スマホ実機は未確認）| TASK-009 |
 | TASK-016 | GitHub Actions で Web 版を書き出し Pages で公開 | 1 | P1 | M | In Progress（016a・016b 完了、016c のスマホ確認待ち） | TASK-004, オーナーがリポジトリを公開 |
 | TASK-014 | Phase 1 手動プレイテストと記録 | 1 | P1 | S | Backlog | TASK-011〜013, 015, 016 |
 | TASK-020 | 弾性区間（自然長〜最大長で引き戻す） | 2 | P1 | M | Backlog | TASK-014 |
