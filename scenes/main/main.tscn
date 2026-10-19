@@ -3,6 +3,8 @@
 [ext_resource type="Script" path="res://scenes/main/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/characters/character.tscn" id="2_character"]
 [ext_resource type="Script" path="res://scripts/input/keyboard_move_input.gd" id="3_keyboard"]
+[ext_resource type="PackedScene" path="res://scenes/rope/rope.tscn" id="4_rope"]
+[ext_resource type="Resource" path="res://data/rope/default_rope_config.tres" id="5_config"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
@@ -24,3 +26,7 @@ action_prefix = "a"
 script = ExtResource("3_keyboard")
 target = NodePath("../CharacterB")
 action_prefix = "b"
+
+[node name="Rope" parent="." instance=ExtResource("4_rope")]
+member_paths = Array[NodePath]([NodePath("../CharacterA"), NodePath("../CharacterB")])
+config = ExtResource("5_config")
