@@ -32,13 +32,13 @@ func test_far_apart_characters_are_pulled_to_two_radii() -> void:
 	var b: Character = main.get_node("CharacterB") as Character
 	rope.config.stiffness = 0.0  # 弾性なしの純粋な最大長の拘束を確かめる
 	a.global_position = Vector2(0, 0)
-	b.global_position = Vector2(600, 0)
+	b.global_position = Vector2(1200, 0)
 	rope.step()
 	var limit: float = rope.config.max_radius * 2.0
 	check_near(a.global_position.distance_to(b.global_position), limit, "distance", MAX_DISTANCE_TOLERANCE)
-	check_vec_near(rope.hub, Vector2(300, 0), "hub stays at the midpoint")
-	check_vec_near(a.global_position, Vector2(60, 0), "A")
-	check_vec_near(b.global_position, Vector2(540, 0), "B")
+	check_vec_near(rope.hub, Vector2(600, 0), "hub stays at the midpoint")
+	check_vec_near(a.global_position, Vector2(120, 0), "A")
+	check_vec_near(b.global_position, Vector2(1080, 0), "B")
 	check_near(rope.stretch_ratios[0], 1.0, "fully stretched")
 	_free_main(main)
 
@@ -90,7 +90,7 @@ func test_show_hub_does_not_change_the_result() -> void:
 		var b: Character = main.get_node("CharacterB") as Character
 		rope.show_hub = visible_hub
 		a.global_position = Vector2(0, 0)
-		b.global_position = Vector2(600, 0)
+		b.global_position = Vector2(1200, 0)
 		rope.step()
 		results.append(a.global_position)
 		results.append(b.global_position)
@@ -162,11 +162,11 @@ func test_elasticity_pulls_a_stretched_member_back() -> void:
 	var b: Character = main.get_node("CharacterB") as Character
 	rope.config.stiffness = 3.0
 	a.global_position = Vector2(0, 0)
-	b.global_position = Vector2(460, 0)  # 各自ハブ(230)から 230 離れている → 自然長 180 を超え、最大長 240 以内
-	rope.hub = Vector2(230, 0)
+	b.global_position = Vector2(900, 0)  # 各自ハブ(450)から 450 離れている → 自然長 380 を超え、最大長 480 以内
+	rope.hub = Vector2(450, 0)
 	rope.step()
 	check_true(a.global_position.x > 0.0, "A moved toward the hub")
-	check_true(b.global_position.x < 460.0, "B moved toward the hub")
+	check_true(b.global_position.x < 900.0, "B moved toward the hub")
 	_free_main(main)
 
 

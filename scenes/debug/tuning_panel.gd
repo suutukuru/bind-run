@@ -10,8 +10,8 @@ extends CanvasLayer
 
 ## [プロパティ名, 表示名, 最小, 最大, 刻み]
 const SLIDERS: Array = [
-	["max_radius", "Max length", 60.0, 600.0, 5.0],
-	["natural_radius", "Slack length", 0.0, 450.0, 5.0],
+	["max_radius", "Max length", 60.0, 900.0, 5.0],
+	["natural_radius", "Slack length", 0.0, 800.0, 5.0],
 	["stiffness", "Elastic pull", 0.0, 12.0, 0.5],
 	["hub_follow_rate", "Hub inertia", 0.0, 20.0, 0.5],
 	["attack_damage", "Rope damage", 1.0, 60.0, 1.0],
@@ -103,8 +103,8 @@ func _build() -> void:
 		_view_label = Label.new()
 		view_row.add_child(_view_label)
 		_view_slider = HSlider.new()
-		_view_slider.min_value = 400.0
-		_view_slider.max_value = 1600.0
+		_view_slider.min_value = 600.0
+		_view_slider.max_value = 2400.0
 		_view_slider.step = 50.0
 		_view_slider.value = _camera.view_short_side
 		_view_slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL

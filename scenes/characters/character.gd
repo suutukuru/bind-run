@@ -7,7 +7,7 @@ extends CharacterBody2D
 const RADIUS: float = 24.0
 
 ## 最大移動速度（px/秒）
-@export var move_speed: float = 220.0
+@export var move_speed: float = 320.0
 ## A と B を見分けるための色
 @export var body_color: Color = Color.WHITE:
 	set(value):
