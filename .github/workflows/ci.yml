@@ -60,3 +60,26 @@ jobs:
         with:
           name: web-build
           path: build/web
+
+  deploy-pages:
+    # 既定ブランチへの push のときだけ公開する（他のブランチでは build-web の確認のみ）
+    needs: build-web
+    if: ${{ github.event_name == 'push' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: web-build
+          path: site
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4
