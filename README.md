@@ -26,6 +26,8 @@
 
 ## 実行方法
 
+- **スマホ/ブラウザで確認**: https://suutukuru.github.io/bind-run/ （push ごとに自動更新。現在は空の灰色の画面のみ）
+
 - Godot エディタで F5（Phase 1 以降）。
 - 操作（予定）: A = WASD、B = 矢印キー、F1 = 接続点の表示切替、F3 = デバッグ表示切替。
 

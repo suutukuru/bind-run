@@ -23,7 +23,7 @@
 | TASK-012 | カメラをハブに追従させる | 1 | P1 | XS | Backlog | TASK-010 |
 | TASK-013 | デバッグ表示（FPS・距離・伸び率） | 1 | P2 | S | Backlog | TASK-010 |
 | TASK-015 | 最小のタッチ入力（TouchMoveInput）| 1 | P1 | S | Backlog | TASK-009 |
-| TASK-016 | GitHub Actions で Web 版を書き出し Pages で公開 | 1 | P1 | M | In Progress（016a 完了、016b 待ち） | TASK-004, オーナーがリポジトリを公開 |
+| TASK-016 | GitHub Actions で Web 版を書き出し Pages で公開 | 1 | P1 | M | In Progress（016a・016b 完了、016c のスマホ確認待ち） | TASK-004, オーナーがリポジトリを公開 |
 | TASK-014 | Phase 1 手動プレイテストと記録 | 1 | P1 | S | Backlog | TASK-011〜013, 015, 016 |
 | TASK-020 | 弾性区間（自然長〜最大長で引き戻す） | 2 | P1 | M | Backlog | TASK-014 |
 | TASK-021 | 限界時の方式切替（引きずる / 止める） | 2 | P1 | S | Backlog | TASK-014 |
@@ -114,7 +114,7 @@ Phase 3 以降のタスクは、Phase 2 の結果で内容が変わるため、P
 - 目的: PC なしでもスマホで最新版を確認できるようにする
 - 実施内容: GitHub Actions のワークフロー（Godot の Web 書き出し → Pages へ公開）。書き出し設定 `export_presets.cfg` はコミットしない方針（CLAUDE.md）なので、CI 内で生成する方法を検討する
 - 調査結果（2026-10-19、公式ドキュメント 4.2 版と検索結果。4.7 版は未確認）: Web 版は SharedArrayBuffer を使い、サーバーが COOP/COEP ヘッダーを返さないと動かない。GitHub Pages ではヘッダーを設定できないため `coi-serviceworker` で回避する案がある。iOS では Godot 4 の Web 版が動かないという報告がある（古い可能性あり）
-- 分割: **016a** CI で Godot を取得し、テスト実行と Web 書き出しを行う（公開なし。ログは私が読める）（**016a は 2026-10-19 に成功**）→ **016b** Pages で公開（オーナーのリポジトリ公開と Pages 有効化が必要）→ **016c** スマホ実機で起動確認（オーナー）
+- 分割: **016a** CI で Godot を取得し、テスト実行と Web 書き出しを行う（公開なし。ログは私が読める）（**016a は 2026-10-19 に成功**）→ **016b** Pages で公開（**2026-10-19 に成功**。https://suutukuru.github.io/bind-run/ ）（オーナーのリポジトリ公開と Pages 有効化が必要）→ **016c** スマホ実機で起動確認（オーナー）
 - 完了条件: push 後に URL が更新され、スマホのブラウザで起動する / テスト: PL-001（手動） / **オーナー作業: リポジトリの公開と Pages の有効化**
 
 ### TASK-014 Phase 1 プレイテスト

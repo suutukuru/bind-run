@@ -26,3 +26,5 @@
 - 追加: `.github/workflows/ci.yml`（Godot 4.7.2 を取得してチェックサム検証 → import → 単体テスト（あれば）→ Web 書き出し → 成果物をアップロード）、`ci/export_presets.web.cfg`（秘密情報なしの Web 書き出し設定。ルートの `export_presets.cfg` は引き続き git 管理外）。
 - 効果: R-08（Godot を実行できない）が緩和される。CI のログを私が読めるため、構文エラーやテスト失敗を私自身が検出・修正できる。
 - 結果（2026-10-19）: CI 初回実行は全ステップ成功（import、Web 書き出し）。R-08 を「緩和済み」に更新し、CLAUDE.md のテスト方針を「CI のログを読んで直す」に変更。
+- 結果（2026-10-19）: Web 書き出しがスレッドなし（`GODOT_THREADS_ENABLED = false`）であることを確認。外部コード（`coi-serviceworker`）は不要になった。リポジトリを公開し、Pages へ自動公開する CI を追加（既定ブランチ `claude/phase0-docs` への push で公開）。URL: https://suutukuru.github.io/bind-run/
+- 修正: CI のスレッド判定を `ensureCrossOriginIsolationHeaders` から `GODOT_THREADS_ENABLED` に変更（前者は PWA 用の別項目で、誤った指標だった）。

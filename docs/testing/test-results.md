@@ -34,6 +34,18 @@
 - **まだ確認できていないこと**: 実際に起動して画面が出るか（TC-101）、`variant/thread_support=false` が効いているか（どのテンプレートが使われたか）、ブラウザでの動作。
 - 自動テスト（単体）: 未実施（テスト未作成）。
 
+## 2026-10-19 CI: スレッドなし確認と Pages 公開（TASK-016a / 016b）
+
+- 対象: コミット `648ba07`（run 39195100702）、`bf2200c`（run 39195148416）
+- 結果:
+
+| 確認 | 結果 |
+|---|---|
+| Web 書き出しがスレッドなしか | **確認済み**。生成された `index.html` に `const GODOT_THREADS_ENABLED = false;`（`variant/thread_support=false` が有効） |
+| 当初のチェック（`ensureCrossOriginIsolationHeaders`） | 誤った指標（PWA 用の別項目で既定値 true）。私のチェックの誤りで、書き出し設定は正しかった。チェックを修正済み |
+| GitHub Pages へのデプロイ | 成功。URL: https://suutukuru.github.io/bind-run/ |
+| 公開 URL へのアクセス | **未確認**（この環境から github.io に接続できない）。スマホでの表示確認はオーナー待ち（TASK-016c） |
+
 ## 不具合一覧
 
 | BUG-ID | 現象 | 再現手順 | 期待結果 | 環境 | 重要度 | 状態 |
