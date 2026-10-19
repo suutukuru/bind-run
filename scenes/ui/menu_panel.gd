@@ -50,6 +50,10 @@ func open(title: String, body: String, options: Array, pause_game: bool = true) 
 	if pause_game:
 		get_tree().paused = true
 	_layout()
+	# キーボード（Enter / Space）でも先頭の選択肢を押せるようにする
+	if _buttons.get_child_count() > 0:
+		(_buttons.get_child(0) as Button).grab_focus()
+	_report.call_deferred()
 
 
 ## 押したのと同じ処理をコードから起こす（テスト用）
@@ -64,6 +68,15 @@ func _choose(callback: Callable, was_paused: bool) -> void:
 	if was_paused:
 		get_tree().paused = false
 	callback.call()
+
+
+# 表示がおかしいときの手がかり: ブラウザのコンソールに、画面とメニューの大きさを 1 回出す
+func _report() -> void:
+	var view: Vector2 = get_viewport().get_visible_rect().size
+	print("MenuPanel '%s': view=%s unit=%.2f root=%s title=%s font=%d buttons=%d first_button=%s" % [
+		_title.text, str(view), UiScale.unit(get_viewport()), str(_root.size), str(_title.get_global_rect()),
+		_title.get_theme_font_size("font_size"), _buttons.get_child_count(),
+		str((_buttons.get_child(0) as Control).get_global_rect()) if _buttons.get_child_count() > 0 else "-"])
 
 
 func _build() -> void:
