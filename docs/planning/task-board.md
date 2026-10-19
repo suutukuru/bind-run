@@ -27,7 +27,7 @@
 | TASK-014 | Phase 1 手動プレイテストと記録 | 1 | P1 | S | Backlog | TASK-011〜013, 015, 016 |
 | TASK-020 | 弾性区間（自然長〜最大長で引き戻す） | 2 | P1 | M | Backlog | TASK-014 |
 | TASK-021 | 限界時の方式切替（引きずる / 止める） | 2 | P1 | S | Backlog | TASK-014 |
-| TASK-022 | 紐パラメータの実行時調整 UI | 2 | P2 | S | Backlog | TASK-020 |
+| TASK-022 | 紐パラメータの実行時調整 UI | 2 | P2 | S | Review（CI 結果待ち。スマホでの操作は未確認）| TASK-020 |
 | TASK-023 | 慣性ハブの試作（ADR-002 案 B） | 2 | P2 | M | Backlog | TASK-020 |
 | TASK-024 | Phase 2 比較プレイテストと方式決定 | 2 | P1 | S | Backlog | TASK-020〜023 |
 | TASK-025 | 仮の仮想ツインスティック（Phase 2b） | 2b | P1 | M | Backlog | TASK-024 |

@@ -31,6 +31,11 @@ func _process(delta: float) -> void:
 		_refresh()
 
 
+func set_text_visible(on: bool) -> void:
+	_label.visible = on
+	_refresh()
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("debug_toggle_overlay"):
 		_label.visible = not _label.visible
