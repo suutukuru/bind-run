@@ -13,11 +13,11 @@
 | TASK-002 | ドキュメント初版の作成 | 0 | P1 | M | Review | TASK-001 |
 | TASK-003 | Windows に Godot 4.7.x を用意し、バージョンを記録する | 0 | P0 | S | Ready（オーナー作業） | — |
 | TASK-004 | Godot プロジェクトの骨組みを作る | 1 | P1 | S | Review（実行確認待ち） | — |
-| TASK-005 | 自作テストランナーを作る | 1 | P1 | S | Review（CI 結果待ち）| TASK-004 |
-| TASK-006 | RopeModel（純粋計算）と単体テスト | 1 | P1 | S | Review（CI 結果待ち）| TASK-005 |
+| TASK-005 | 自作テストランナーを作る | 1 | P1 | S | Done | TASK-004 |
+| TASK-006 | RopeModel（純粋計算）と単体テスト | 1 | P1 | S | Done | TASK-005 |
 | TASK-007 | 2 人のキャラクターを表示する | 1 | P1 | S | Review（CI 結果待ち。画面表示は未確認）| TASK-004 |
 | TASK-008 | 入力アクションと KeyboardMoveInput（A の移動） | 1 | P1 | S | Backlog | TASK-007 |
-| TASK-009 | B の移動（同じ仕組みを設定違いで使う） | 1 | P1 | XS | Backlog | TASK-008 |
+| TASK-009 | B の移動（同じ仕組みを設定違いで使う） | 1 | P1 | XS | Review（CI 結果待ち。実機操作は未確認）| TASK-008 |
 | TASK-010 | Rope ノード: ハブ計算と最大長の拘束 | 1 | P1 | M | Backlog | TASK-006, 009 |
 | TASK-011 | 紐とハブの描画、ハブ表示切替 | 1 | P1 | S | Backlog | TASK-010 |
 | TASK-012 | カメラをハブに追従させる | 1 | P1 | XS | Backlog | TASK-010 |

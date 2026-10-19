@@ -10,6 +10,10 @@ const KEYS: Dictionary = {
 	"a_right": KEY_D,
 	"a_up": KEY_W,
 	"a_down": KEY_S,
+	"b_left": KEY_LEFT,
+	"b_right": KEY_RIGHT,
+	"b_up": KEY_UP,
+	"b_down": KEY_DOWN,
 }
 
 
