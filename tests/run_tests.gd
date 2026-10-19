@@ -6,6 +6,10 @@ extends SceneTree
 
 
 func _initialize() -> void:
+	# _initialize の時点ではルートノードがまだ「準備完了」ではなく、そこへ追加したノードの
+	# _ready が呼ばれない。1 フレーム待ってからテストを始める。
+	await process_frame
+
 	var dir_path: String = _get_dir_arg()
 	var total: int = 0
 	var failed: int = 0
