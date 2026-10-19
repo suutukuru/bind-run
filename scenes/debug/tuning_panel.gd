@@ -121,9 +121,10 @@ func _layout() -> void:
 	ui_theme.default_font_size = int(3.0 * u)
 	_root.theme = ui_theme
 	var margin: float = 1.5 * u
+	var top: float = 6.5 * u  # HUD のバーの下
 	_toggle.custom_minimum_size = Vector2(12.0 * u, 6.0 * u)
-	_toggle.position = Vector2(view.x - 12.0 * u - margin, margin)
-	_panel.position = Vector2(view.x - 58.0 * u - margin, margin * 2.0 + 6.0 * u)
+	_toggle.position = Vector2(view.x - 12.0 * u - margin, top)
+	_panel.position = Vector2(view.x - 58.0 * u - margin, top + 7.5 * u)
 	for property: String in _sliders:
 		(_sliders[property] as HSlider).custom_minimum_size = Vector2(26.0 * u, 5.0 * u)
 		(_value_labels[property] as Label).custom_minimum_size = Vector2(28.0 * u, 0)

@@ -46,7 +46,8 @@ func _refresh() -> void:
 		return
 	var view: Vector2 = get_viewport().get_visible_rect().size
 	# 文字の大きさは画面の短辺に比例させる（端末が違っても読める大きさにする）
-	_label.add_theme_font_size_override("font_size", int(minf(view.x, view.y) * 0.035))
+	_label.add_theme_font_size_override("font_size", int(minf(view.x, view.y) * 0.03))
+	_label.position = Vector2(UiScale.unit(get_viewport()) * 1.5, UiScale.unit(get_viewport()) * 14.0)
 	var lines: PackedStringArray = PackedStringArray()
 	lines.append("FPS %d  view %dx%d  win %s" % [Engine.get_frames_per_second(), view.x, view.y, str(DisplayServer.window_get_size())])
 	if _rope != null and _rope.stretch_ratios.size() >= 2:
