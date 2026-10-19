@@ -12,7 +12,7 @@
 | TASK-001 | クラウド作業環境の調査 | 0 | P1 | XS | Done | — |
 | TASK-002 | ドキュメント初版の作成 | 0 | P1 | M | Review | TASK-001 |
 | TASK-003 | Windows に Godot 4.7.x を用意し、バージョンを記録する | 0 | P0 | S | Ready（オーナー作業） | — |
-| TASK-004 | Godot プロジェクトの骨組みを作る | 1 | P1 | S | Ready | — |
+| TASK-004 | Godot プロジェクトの骨組みを作る | 1 | P1 | S | Review（実行確認待ち） | — |
 | TASK-005 | 自作テストランナーを作る | 1 | P1 | S | Backlog | TASK-004 |
 | TASK-006 | RopeModel（純粋計算）と単体テスト | 1 | P1 | S | Backlog | TASK-005 |
 | TASK-007 | 2 人のキャラクターを表示する | 1 | P1 | S | Backlog | TASK-004 |
@@ -59,7 +59,9 @@ Phase 3 以降のタスクは、Phase 2 の結果で内容が変わるため、P
 
 ### TASK-004 Godot プロジェクトの骨組み — Ready
 - 目的: Godot で開ける最小のプロジェクトを作る
-- 実施内容: `project.godot`（名前、ウィンドウ 1280×720、InputMap、レンダラーは Mobile/Compatibility から選択）、`.gitignore`/`.gitattributes` 確認、`docs/.gdignore`、空の `main.tscn`
+- 実施内容: `project.godot`（名前、ウィンドウ 1280×720、レンダラー = Compatibility）、`.gitignore`/`.gitattributes` 確認、`docs/.gdignore`、空の `main.tscn`
+- 変更点: InputMap は TASK-008 へ移した（Godot を実行できず、手書きの入力設定を検証できないため。必要になる TASK-008 で、動作確認とセットで追加する）
+- 実施結果（2026-10-19）: 上記ファイルを作成してコミット。**Godot での起動は未確認**
 - 完了条件: Windows の Godot でプロジェクトを開いてエラーなく実行でき、灰色の画面が出る
 - テスト: TC-101（手動、**オーナー確認**）
 - 関連: ADR-009
