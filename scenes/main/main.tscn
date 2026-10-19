@@ -19,12 +19,12 @@ body_color = Color(1, 0.6, 0.2, 1)
 
 [node name="InputA" type="Node" parent="."]
 script = ExtResource("3_keyboard")
-target = NodePath("../CharacterA")
+target_path = NodePath("../CharacterA")
 action_prefix = "a"
 
 [node name="InputB" type="Node" parent="."]
 script = ExtResource("3_keyboard")
-target = NodePath("../CharacterB")
+target_path = NodePath("../CharacterB")
 action_prefix = "b"
 
 [node name="Rope" parent="." instance=ExtResource("4_rope")]
