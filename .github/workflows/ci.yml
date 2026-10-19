@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  GODOT_VERSION: "4.7.2"
+  GODOT_RELEASE_URL: https://github.com/godotengine/godot/releases/download/4.7.2-stable
+
+jobs:
+  build-web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Godot and export templates (checksum verified)
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/godot" && cd "$RUNNER_TEMP/godot"
+          BIN="Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          TPL="Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          curl -fsSLO "$GODOT_RELEASE_URL/$BIN"
+          curl -fsSLO "$GODOT_RELEASE_URL/$TPL"
+          curl -fsSLO "$GODOT_RELEASE_URL/SHA512-SUMS.txt"
+          grep -E " (\*)?($BIN|$TPL)\$" SHA512-SUMS.txt | sha512sum -c -
+          unzip -q "$BIN"
+          mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          unzip -q "$TPL" -d tpl
+          mv tpl/templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable/
+          ln -s "$PWD/Godot_v${GODOT_VERSION}-stable_linux.x86_64" /usr/local/bin/godot
+          godot --version
+
+      - name: Import project
+        run: godot --headless --path . --import
+
+      - name: Run unit tests
+        if: ${{ hashFiles('tests/run_tests.gd') != '' }}
+        run: godot --headless --path . --script res://tests/run_tests.gd
+
+      - name: Export Web build
+        run: |
+          cp ci/export_presets.web.cfg export_presets.cfg
+          mkdir -p build/web
+          godot --headless --path . --export-release "Web" build/web/index.html
+          ls -la build/web
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: build/web
