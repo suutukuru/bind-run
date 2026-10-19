@@ -74,3 +74,32 @@ func test_two_members_end_up_within_two_radii() -> void:
 	check_vec_near(a2, Vector2(40, 0), "A")
 	check_vec_near(b2, Vector2(360, 0), "B")
 	check_near(a2.distance_to(b2), 320.0, "distance")
+
+
+func test_elastic_pull_moves_toward_hub_by_excess_share() -> void:
+	# 超過 30、stiffness 3、delta 1/60 → 30 * 3 / 60 = 1.5 だけ寄る
+	var result: Vector2 = RopeModel.elastic_pull(Vector2(130, 0), Vector2.ZERO, 100.0, 3.0, 1.0 / 60.0)
+	check_vec_near(result, Vector2(128.5, 0))
+
+
+func test_elastic_pull_does_nothing_inside_natural_length_or_without_stiffness() -> void:
+	check_vec_near(RopeModel.elastic_pull(Vector2(80, 0), Vector2.ZERO, 100.0, 3.0, 0.1), Vector2(80, 0), "inside")
+	check_vec_near(RopeModel.elastic_pull(Vector2(130, 0), Vector2.ZERO, 100.0, 0.0, 0.1), Vector2(130, 0), "no stiffness")
+	check_vec_near(RopeModel.elastic_pull(Vector2.ZERO, Vector2.ZERO, 100.0, 3.0, 0.1), Vector2.ZERO, "at hub")
+
+
+func test_elastic_pull_never_overshoots_natural_length() -> void:
+	var result: Vector2 = RopeModel.elastic_pull(Vector2(130, 0), Vector2.ZERO, 100.0, 1000.0, 1.0)
+	check_vec_near(result, Vector2(100, 0))
+
+
+func test_follow_hub() -> void:
+	check_vec_near(RopeModel.follow_hub(Vector2(0, 0), Vector2(10, 0), 0.0, 0.016), Vector2(10, 0), "no inertia")
+	check_vec_near(RopeModel.follow_hub(Vector2(0, 0), Vector2(10, 0), 10.0, 0.05), Vector2(5, 0), "half way")
+	check_vec_near(RopeModel.follow_hub(Vector2(0, 0), Vector2(10, 0), 1000.0, 1.0), Vector2(10, 0), "clamped to target")
+
+
+func test_distance_to_segment() -> void:
+	check_near(RopeModel.distance_to_segment(Vector2(0, 5), Vector2(-10, 0), Vector2(10, 0)), 5.0, "beside")
+	check_near(RopeModel.distance_to_segment(Vector2(20, 0), Vector2(-10, 0), Vector2(10, 0)), 10.0, "beyond the end")
+	check_near(RopeModel.distance_to_segment(Vector2(3, 4), Vector2(0, 0), Vector2(0, 0)), 5.0, "degenerate segment")

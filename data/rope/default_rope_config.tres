@@ -6,3 +6,10 @@
 script = ExtResource("1_config")
 max_radius = 160.0
 natural_radius = 100.0
+limit_mode = 0
+stiffness = 3.0
+hub_follow_rate = 0.0
+attack_threshold = 0.9
+attack_damage = 10.0
+attack_rehit_interval = 0.4
+attack_half_width = 8.0

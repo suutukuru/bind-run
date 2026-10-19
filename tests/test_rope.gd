@@ -30,6 +30,7 @@ func test_far_apart_characters_are_pulled_to_two_radii() -> void:
 	var rope: Rope = main.get_node("Rope") as Rope
 	var a: Character = main.get_node("CharacterA") as Character
 	var b: Character = main.get_node("CharacterB") as Character
+	rope.config.stiffness = 0.0  # 弾性なしの純粋な最大長の拘束を確かめる
 	a.global_position = Vector2(0, 0)
 	b.global_position = Vector2(400, 0)
 	rope.step()
@@ -116,4 +117,72 @@ func test_camera_follows_the_hub() -> void:
 	rope.step()
 	camera._process(0.016)
 	check_vec_near(camera.global_position, Vector2(1050, 500), "camera on hub")
+	_free_main(main)
+
+
+func _push_a_for_30_frames(rope: Rope, a: Character, b: Character) -> void:
+	a.global_position = Vector2(0, 0)
+	b.global_position = Vector2(0, 0)
+	rope.hub = Vector2(0, 0)
+	for frame: int in 30:
+		a.global_position += Vector2(50, 0)  # A だけが毎フレーム右へ進もうとする
+		rope.step()
+
+
+func test_drag_mode_pulls_the_partner_along() -> void:
+	var main: Node = _make_main()
+	var rope: Rope = main.get_node("Rope") as Rope
+	var a: Character = main.get_node("CharacterA") as Character
+	var b: Character = main.get_node("CharacterB") as Character
+	rope.config.stiffness = 0.0
+	rope.config.limit_mode = RopeConfig.DRAG
+	_push_a_for_30_frames(rope, a, b)
+	check_true(b.global_position.x > 50.0, "B was dragged")
+	_free_main(main)
+
+
+func test_block_mode_stops_the_pusher_without_dragging_the_partner() -> void:
+	var main: Node = _make_main()
+	var rope: Rope = main.get_node("Rope") as Rope
+	var a: Character = main.get_node("CharacterA") as Character
+	var b: Character = main.get_node("CharacterB") as Character
+	rope.config.stiffness = 0.0
+	rope.config.limit_mode = RopeConfig.BLOCK
+	_push_a_for_30_frames(rope, a, b)
+	check_near(b.global_position.x, 0.0, "B stays")
+	check_true(a.global_position.x <= rope.config.max_radius * 2.0 + 0.01, "A is stopped at 2R")
+	check_true(a.global_position.x > rope.config.max_radius * 1.5, "A got close to the limit")
+	_free_main(main)
+
+
+func test_elasticity_pulls_a_stretched_member_back() -> void:
+	var main: Node = _make_main()
+	var rope: Rope = main.get_node("Rope") as Rope
+	var a: Character = main.get_node("CharacterA") as Character
+	var b: Character = main.get_node("CharacterB") as Character
+	rope.config.stiffness = 3.0
+	a.global_position = Vector2(0, 0)
+	b.global_position = Vector2(260, 0)  # 各自ハブ(130)から 130 離れている → 自然長 100 を超える
+	rope.hub = Vector2(130, 0)
+	rope.step()
+	check_true(a.global_position.x > 0.0, "A moved toward the hub")
+	check_true(b.global_position.x < 260.0, "B moved toward the hub")
+	_free_main(main)
+
+
+func test_inertial_hub_lags_behind_the_midpoint() -> void:
+	var main: Node = _make_main()
+	var rope: Rope = main.get_node("Rope") as Rope
+	var a: Character = main.get_node("CharacterA") as Character
+	var b: Character = main.get_node("CharacterB") as Character
+	rope.config.stiffness = 0.0
+	rope.config.hub_follow_rate = 5.0
+	rope.hub = Vector2(50, 0)
+	a.global_position = Vector2(0, 0)
+	b.global_position = Vector2(120, 0)  # 中点は (60, 0)
+	rope.step()
+	check_true(rope.hub.x > 50.0 and rope.hub.x < 60.0, "hub is between old hub and midpoint")
+	for frame: int in 300:
+		rope.step()
+	check_true(rope.hub.distance_to(Vector2(60, 0)) < 1.0, "hub catches up")
 	_free_main(main)

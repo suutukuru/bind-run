@@ -5,10 +5,13 @@ extends Node2D
 ## CanvasLayer の下に置くと、カメラに影響されず画面座標で動く。
 ## 1 インスタンスが 1 本の指・1 キャラを担当する（A は LEFT、B は RIGHT）。
 
-enum Side { LEFT, RIGHT }
+## 担当する画面の側。クラス自身の enum を変数の型にすると、ゲーム起動時の読み込み順によっては
+## 「Cannot assign a value of type TouchMoveInput.Side as Side」で読み込めなくなるため、int で持つ
+const LEFT: int = 0
+const RIGHT: int = 1
 
 @export var target_path: NodePath
-@export var side: Side = Side.LEFT
+@export_enum("Left", "Right") var side: int = LEFT
 ## スティックの最大半径（画面の短辺に対する比率）。ここまで引くと intent の長さが 1 になる。
 ## 縦持ち・横持ち・端末の大きさが違っても、指で扱う大きさが近くなるよう比率で持つ
 @export var stick_radius_ratio: float = 0.15
@@ -86,7 +89,7 @@ func _physics_process(_delta: float) -> void:
 
 func _is_my_side(x: float) -> bool:
 	var half: float = get_viewport().get_visible_rect().size.x * 0.5
-	return x < half if side == Side.LEFT else x >= half
+	return x < half if side == LEFT else x >= half
 
 
 func _draw() -> void:
