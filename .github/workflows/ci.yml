@@ -41,6 +41,16 @@ jobs:
         if: ${{ hashFiles('tests/run_tests.gd') != '' }}
         run: godot --headless --path . --script res://tests/run_tests.gd
 
+      - name: Test runner self-check (a failing test must give exit code 1)
+        if: ${{ hashFiles('tests/run_tests.gd') != '' }}
+        run: |
+          set +e
+          out=$(godot --headless --path . --script res://tests/run_tests.gd -- --dir=res://tests/fixtures/failing 2>&1)
+          rc=$?
+          set -e
+          echo "$out"
+          [ "$rc" -eq 1 ] && echo "$out" | grep -q "FAIL .*test_always_fails"
+
       - name: Export Web build
         run: |
           cp ci/export_presets.web.cfg export_presets.cfg
