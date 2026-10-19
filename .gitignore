@@ -1,0 +1,18 @@
+# Godot 4
+.godot/
+*.translation
+/android/
+
+# Export output
+/build/
+*.apk
+*.aab
+*.ipa
+
+# Export presets may contain keystore passwords; commit only after review
+export_presets.cfg
+export_credentials.cfg
+
+# OS
+.DS_Store
+Thumbs.db
