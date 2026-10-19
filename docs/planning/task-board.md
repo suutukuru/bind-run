@@ -22,7 +22,9 @@
 | TASK-011 | 紐とハブの描画、ハブ表示切替 | 1 | P1 | S | Backlog | TASK-010 |
 | TASK-012 | カメラをハブに追従させる | 1 | P1 | XS | Backlog | TASK-010 |
 | TASK-013 | デバッグ表示（FPS・距離・伸び率） | 1 | P2 | S | Backlog | TASK-010 |
-| TASK-014 | Phase 1 手動プレイテストと記録 | 1 | P1 | S | Backlog | TASK-011〜013 |
+| TASK-015 | 最小のタッチ入力（TouchMoveInput）| 1 | P1 | S | Backlog | TASK-009 |
+| TASK-016 | GitHub Actions で Web 版を書き出し Pages で公開 | 1 | P1 | M | Backlog | TASK-004, オーナーがリポジトリを公開 |
+| TASK-014 | Phase 1 手動プレイテストと記録 | 1 | P1 | S | Backlog | TASK-011〜013, 015, 016 |
 | TASK-020 | 弾性区間（自然長〜最大長で引き戻す） | 2 | P1 | M | Backlog | TASK-014 |
 | TASK-021 | 限界時の方式切替（引きずる / 止める） | 2 | P1 | S | Backlog | TASK-014 |
 | TASK-022 | 紐パラメータの実行時調整 UI | 2 | P2 | S | Backlog | TASK-020 |
@@ -100,6 +102,17 @@ Phase 3 以降のタスクは、Phase 2 の結果で内容が変わるため、P
 
 ### TASK-013 デバッグ表示
 - 完了条件: FPS、A〜B 距離、伸び率が表示され、F3 で切替 / 関連: FR-072
+
+### TASK-015 最小のタッチ入力
+- 目的: スマホのブラウザでも Phase 1 を操作できるようにする（本格的な仮想スティックは Phase 2b / 6）
+- 実施内容: `TouchMoveInput`（KeyboardMoveInput と同じく `move_intent` を書くだけ）。画面左半分でタッチした位置を基準にドラッグ方向へ A、右半分で B。PC ではマウスでも試せる
+- 完了条件: スマホで A・B を同時に動かせる / テスト: TC-107（手動） / 関連: FR-063, 064
+
+### TASK-016 Web 版の自動ビルドと公開
+- 目的: PC なしでもスマホで最新版を確認できるようにする
+- 実施内容: GitHub Actions のワークフロー（Godot の Web 書き出し → Pages へ公開）。書き出し設定 `export_presets.cfg` はコミットしない方針（CLAUDE.md）なので、CI 内で生成する方法を検討する
+- 事前確認: Godot 4.7 の Web 書き出しの要件（スレッド、ヘッダー）、Pages の公開条件を公式ドキュメントで確認する（現時点では**未確認**）
+- 完了条件: push 後に URL が更新され、スマホのブラウザで起動する / テスト: PL-001（手動） / **オーナー作業: リポジトリの公開と Pages の有効化**
 
 ### TASK-014 Phase 1 プレイテスト
 - 実施内容: TC-101〜106 をオーナーが実施。H-03, H-04 について一言感想を記録
