@@ -6,12 +6,12 @@ const MAX_DISTANCE_TOLERANCE: float = 0.001
 
 func _make_main() -> Node:
 	var main: Node = (load("res://scenes/main/main.tscn") as PackedScene).instantiate()
-	root.add_child(main)
+	tree.root.add_child(main)
 	return main
 
 
 func _free_main(main: Node) -> void:
-	root.remove_child(main)
+	tree.root.remove_child(main)
 	main.free()
 
 

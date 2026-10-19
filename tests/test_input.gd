@@ -32,7 +32,7 @@ func test_a_and_b_do_not_share_keys() -> void:
 func test_key_input_moves_only_its_target() -> void:
 	InputActions.register()
 	var main: Node = (load("res://scenes/main/main.tscn") as PackedScene).instantiate()
-	root.add_child(main)
+	tree.root.add_child(main)
 	var a: Character = main.get_node("CharacterA") as Character
 	var input_a: KeyboardMoveInput = main.get_node("InputA") as KeyboardMoveInput
 	check_true(input_a.target == a, "InputA targets CharacterA")
@@ -45,14 +45,14 @@ func test_key_input_moves_only_its_target() -> void:
 	input_a._physics_process(0.016)
 	check_vec_near(a.move_intent, Vector2.ZERO, "A stops")
 
-	root.remove_child(main)
+	tree.root.remove_child(main)
 	main.free()
 
 
 func test_b_moves_independently_of_a() -> void:
 	InputActions.register()
 	var main: Node = (load("res://scenes/main/main.tscn") as PackedScene).instantiate()
-	root.add_child(main)
+	tree.root.add_child(main)
 	var a: Character = main.get_node("CharacterA") as Character
 	var b: Character = main.get_node("CharacterB") as Character
 	var input_a: KeyboardMoveInput = main.get_node("InputA") as KeyboardMoveInput
@@ -75,5 +75,5 @@ func test_b_moves_independently_of_a() -> void:
 
 	Input.action_release("a_left")
 	Input.action_release("b_up")
-	root.remove_child(main)
+	tree.root.remove_child(main)
 	main.free()

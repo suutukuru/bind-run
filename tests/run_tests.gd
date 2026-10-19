@@ -27,6 +27,7 @@ func _initialize() -> void:
 			continue
 
 		var suite = script.new()
+		suite.tree = self
 		var method_names: Array = []
 		for method: Dictionary in suite.get_method_list():
 			if String(method["name"]).begins_with("test_"):

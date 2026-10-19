@@ -4,6 +4,8 @@ extends RefCounted
 ## run_tests.gd が集計する（外部アドオンを使わない最小構成、ADR-006）。
 
 var failures: Array[String] = []
+## シーンを組み立てるテスト用。ランナーが実行前に渡す（tree.root にノードを追加できる）
+var tree: SceneTree
 
 
 func check_true(condition: bool, message: String = "") -> void:
