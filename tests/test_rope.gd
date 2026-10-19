@@ -162,11 +162,11 @@ func test_elasticity_pulls_a_stretched_member_back() -> void:
 	var b: Character = main.get_node("CharacterB") as Character
 	rope.config.stiffness = 3.0
 	a.global_position = Vector2(0, 0)
-	b.global_position = Vector2(260, 0)  # 各自ハブ(130)から 130 離れている → 自然長 100 を超える
-	rope.hub = Vector2(130, 0)
+	b.global_position = Vector2(460, 0)  # 各自ハブ(230)から 230 離れている → 自然長 180 を超え、最大長 240 以内
+	rope.hub = Vector2(230, 0)
 	rope.step()
 	check_true(a.global_position.x > 0.0, "A moved toward the hub")
-	check_true(b.global_position.x < 260.0, "B moved toward the hub")
+	check_true(b.global_position.x < 460.0, "B moved toward the hub")
 	_free_main(main)
 
 

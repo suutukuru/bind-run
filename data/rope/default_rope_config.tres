@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1_config")
 max_radius = 240.0
-natural_radius = 150.0
+natural_radius = 180.0
 limit_mode = 0
 stiffness = 3.0
 hub_follow_rate = 0.0
