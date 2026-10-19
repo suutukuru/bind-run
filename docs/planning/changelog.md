@@ -25,3 +25,4 @@
 - オーナー回答: **PC は今使えない**。→ 実行確認は GitHub Actions（CI）と、Web 版をスマホのブラウザで開く方法で行う。TASK-003（Windows に Godot を入れる）は PC が使えるまで保留。
 - 追加: `.github/workflows/ci.yml`（Godot 4.7.2 を取得してチェックサム検証 → import → 単体テスト（あれば）→ Web 書き出し → 成果物をアップロード）、`ci/export_presets.web.cfg`（秘密情報なしの Web 書き出し設定。ルートの `export_presets.cfg` は引き続き git 管理外）。
 - 効果: R-08（Godot を実行できない）が緩和される。CI のログを私が読めるため、構文エラーやテスト失敗を私自身が検出・修正できる。
+- 結果（2026-10-19）: CI 初回実行は全ステップ成功（import、Web 書き出し）。R-08 を「緩和済み」に更新し、CLAUDE.md のテスト方針を「CI のログを読んで直す」に変更。
