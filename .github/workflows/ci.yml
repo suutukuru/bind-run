@@ -90,6 +90,13 @@ jobs:
           [ "$rc" -eq 0 ]
           ls -la build/web
 
+      - name: Cache-bust the game pack (GitHub Pages lets browsers reuse index.pck for 10 minutes)
+        run: |
+          # ゲームの中身は index.pck に入っている。iPhone の Safari は通常の再読み込みでも古い pck を使い続けることがあるため、
+          # 読み込む URL にコミットの識別子を付けて、デプロイごとに必ず新しいものを取りに行かせる。
+          sed -i "s|\"executable\":\"index\"|\"executable\":\"index\",\"mainPack\":\"index.pck?v=${GITHUB_SHA}\"|" build/web/index.html
+          grep -o '"mainPack":"[^"]*"' build/web/index.html
+
       - name: Check the build is single-threaded (no SharedArrayBuffer headers needed)
         run: |
           grep -n 'GODOT_THREADS_ENABLED' build/web/index.html
