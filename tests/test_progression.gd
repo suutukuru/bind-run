@@ -39,7 +39,7 @@ func test_multiply_and_add_upgrades_change_the_right_values() -> void:
 	(load("res://data/upgrades/blaster_damage.tres") as UpgradeDef).apply_to(main)
 	check_near(weapon.damage, before_damage * 1.3, "blaster damage x1.3")
 	(load("res://data/upgrades/rope_length.tres") as UpgradeDef).apply_to(main)
-	check_near(rope.config.max_radius, before_radius + 20.0, "rope +20")
+	check_near(rope.config.max_radius, before_radius + 40.0, "rope +40")
 	(load("res://data/upgrades/max_hp.tres") as UpgradeDef).apply_to(main)
 	check_near(state.max_hp, 120.0, "max hp")
 	check_near(state.hp, 120.0, "healed by the gained amount")
