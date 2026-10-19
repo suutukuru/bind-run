@@ -16,7 +16,7 @@
 | `UpgradeDef` | `id`, `title`, `description`, `target_path`, `property_path`, `amount`, `mode`（加算/乗算）, `max_stacks` | 4 | **作成済み**（13 種。ADR-015）|
 | `WaveTable` | 経過時間ごとの出現間隔・敵の種類 | — | **作らないことにした**: `EnemySpawner` の静的関数（`interval_at / count_at / weights_at`）で足りる。ステージや敵が増えたら Resource 化を検討 |
 
-- Phase 1 では `move_speed` は `Character` の `@export` に直接持つ。`CharacterDef` は武器が入る Phase 3 で導入する（今作ると中身がほぼ空の抽象化になるため）。
+- `move_speed` は `Character` の `@export` に直接持つ。`CharacterDef` は作らなかった（キャラは 2 人固定で、武器は子ノードの `Weapon` が持つため。中身がほぼ空の抽象化になる）。キャラを増やす段階で再検討する。
 
 ## 2. 状態データ（ノードの変数）
 
