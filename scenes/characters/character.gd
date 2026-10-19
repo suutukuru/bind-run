@@ -4,7 +4,7 @@ extends CharacterBody2D
 ## 紐による位置の補正は Rope の責任で、ここには書かない。
 
 ## 見た目の円の半径。CollisionShape2D の半径（character.tscn）と合わせる
-const RADIUS: float = 16.0
+const RADIUS: float = 24.0
 
 ## 最大移動速度（px/秒）
 @export var move_speed: float = 220.0

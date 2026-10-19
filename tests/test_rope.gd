@@ -96,3 +96,24 @@ func test_show_hub_does_not_change_the_result() -> void:
 		_free_main(main)
 	check_vec_near(results[0], results[2], "A position")
 	check_vec_near(results[1], results[3], "B position")
+
+
+func test_camera_zoom_keeps_short_side_constant() -> void:
+	# 横 1280x720 でも縦 390x844 に相当する比率でも、短辺に映る長さは同じ（600）
+	check_near(FollowCamera.zoom_for(Vector2(1280, 720), 600.0), 1.2, "landscape")
+	check_near(FollowCamera.zoom_for(Vector2(1280, 2772), 600.0), 1280.0 / 600.0, "portrait")
+	check_near(FollowCamera.zoom_for(Vector2(1280, 720), 0.0), 1.0, "guard")
+
+
+func test_camera_follows_the_hub() -> void:
+	var main: Node = _make_main()
+	var rope: Rope = main.get_node("Rope") as Rope
+	var camera: FollowCamera = main.get_node("Camera") as FollowCamera
+	var a: Character = main.get_node("CharacterA") as Character
+	var b: Character = main.get_node("CharacterB") as Character
+	a.global_position = Vector2(1000, 500)
+	b.global_position = Vector2(1100, 500)
+	rope.step()
+	camera._process(0.016)
+	check_vec_near(camera.global_position, Vector2(1050, 500), "camera on hub")
+	_free_main(main)

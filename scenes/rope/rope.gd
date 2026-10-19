@@ -45,6 +45,9 @@ func _ready() -> void:
 			_members.append(member)
 	if _members.size() < 2:
 		push_error("Rope: メンバーが 2 人未満です")
+		return
+	# カメラが最初のフレームから正しい位置を向けるよう、ハブだけ先に求めておく
+	hub = RopeModel.hub_position(_member_positions())
 
 
 func _physics_process(_delta: float) -> void:
@@ -55,11 +58,8 @@ func _physics_process(_delta: float) -> void:
 func step() -> void:
 	if config == null or _members.size() < 2:
 		return
-	var points: PackedVector2Array = PackedVector2Array()
-	for member: Character in _members:
-		points.append(member.global_position)
 	# ハブは補正前の位置から 1 回だけ計算し、全員に同じハブを使う
-	hub = RopeModel.hub_position(points)
+	hub = RopeModel.hub_position(_member_positions())
 
 	stretch_ratios.resize(_members.size())
 	for i: int in _members.size():
@@ -70,6 +70,18 @@ func step() -> void:
 			fixed.distance_to(hub), config.natural_radius, config.max_radius
 		)
 	queue_redraw()
+
+
+## つながっているキャラ（読み取り用のコピー）
+func members() -> Array[Character]:
+	return _members.duplicate()
+
+
+func _member_positions() -> PackedVector2Array:
+	var points: PackedVector2Array = PackedVector2Array()
+	for member: Character in _members:
+		points.append(member.global_position)
+	return points
 
 
 func _draw() -> void:

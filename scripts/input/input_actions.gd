@@ -15,6 +15,7 @@ const KEYS: Dictionary = {
 	"b_up": KEY_UP,
 	"b_down": KEY_DOWN,
 	"debug_toggle_hub": KEY_F1,
+	"debug_toggle_overlay": KEY_F3,
 }
 
 

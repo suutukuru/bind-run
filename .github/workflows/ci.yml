@@ -51,6 +51,16 @@ jobs:
           echo "$out"
           [ "$rc" -eq 1 ] && echo "$out" | grep -q "FAIL .*test_always_fails"
 
+      - name: Smoke run (the game scene must run 300 frames without script errors)
+        run: |
+          set +e
+          out=$(godot --headless --path . res://scenes/main/main.tscn --quit-after 300 2>&1)
+          rc=$?
+          set -e
+          echo "$out" | tail -30
+          [ "$rc" -eq 0 ]
+          if echo "$out" | grep -E "SCRIPT ERROR|^ERROR:|Parse Error"; then exit 1; fi
+
       - name: Export Web build
         run: |
           cp ci/export_presets.web.cfg export_presets.cfg

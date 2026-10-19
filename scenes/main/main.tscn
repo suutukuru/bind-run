@@ -4,6 +4,8 @@
 [ext_resource type="PackedScene" path="res://scenes/characters/character.tscn" id="2_character"]
 [ext_resource type="Script" path="res://scripts/input/keyboard_move_input.gd" id="3_keyboard"]
 [ext_resource type="Script" path="res://scripts/input/touch_move_input.gd" id="6_touch"]
+[ext_resource type="Script" path="res://scenes/camera/follow_camera.gd" id="7_camera"]
+[ext_resource type="Script" path="res://scenes/debug/debug_overlay.gd" id="8_debug"]
 [ext_resource type="PackedScene" path="res://scenes/rope/rope.tscn" id="4_rope"]
 [ext_resource type="Resource" path="res://data/rope/default_rope_config.tres" id="5_config"]
 
@@ -43,3 +45,11 @@ side = 0
 script = ExtResource("6_touch")
 target_path = NodePath("../../CharacterB")
 side = 1
+
+[node name="Camera" type="Camera2D" parent="."]
+script = ExtResource("7_camera")
+rope_path = NodePath("../Rope")
+
+[node name="DebugOverlay" type="CanvasLayer" parent="."]
+script = ExtResource("8_debug")
+rope_path = NodePath("../Rope")

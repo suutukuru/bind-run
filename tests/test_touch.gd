@@ -53,18 +53,18 @@ func test_left_finger_moves_only_a() -> void:
 	check_true(touch_a.target == a and touch_b.target == b, "targets resolved")
 
 	var start: Vector2 = Vector2(width * 0.25, 300)
-	touch_a._input(_touch(0, true, start))
-	touch_b._input(_touch(0, true, start))
+	touch_a._unhandled_input(_touch(0, true, start))
+	touch_b._unhandled_input(_touch(0, true, start))
 	check_true(touch_a.is_active(), "left node takes the left finger")
 	check_true(not touch_b.is_active(), "right node ignores the left finger")
 
-	touch_a._input(_drag(0, start + Vector2(80, 0)))
+	touch_a._unhandled_input(_drag(0, start + Vector2(touch_a.stick_radius_px(), 0)))
 	touch_a._physics_process(0.016)
 	touch_b._physics_process(0.016)
 	check_vec_near(a.move_intent, Vector2(1, 0), "A moves right")
 	check_vec_near(b.move_intent, Vector2.ZERO, "B untouched")
 
-	touch_a._input(_touch(0, false, start))
+	touch_a._unhandled_input(_touch(0, false, start))
 	check_true(not touch_a.is_active(), "finger released")
 	_free_main(main)
 
@@ -81,10 +81,10 @@ func test_two_fingers_move_both_independently() -> void:
 	var right: Vector2 = Vector2(width * 0.75, 300)
 	# 同じ画面で、指 0 が左・指 1 が右（FR-001/002 の同時操作）
 	for node: TouchMoveInput in [touch_a, touch_b]:
-		node._input(_touch(0, true, left))
-		node._input(_touch(1, true, right))
-	touch_a._input(_drag(0, left + Vector2(0, -80)))
-	touch_b._input(_drag(1, right + Vector2(-80, 0)))
+		node._unhandled_input(_touch(0, true, left))
+		node._unhandled_input(_touch(1, true, right))
+	touch_a._unhandled_input(_drag(0, left + Vector2(0, -touch_a.stick_radius_px())))
+	touch_b._unhandled_input(_drag(1, right + Vector2(-touch_b.stick_radius_px(), 0)))
 	touch_a._physics_process(0.016)
 	touch_b._physics_process(0.016)
 	check_vec_near(a.move_intent, Vector2(0, -1), "A up")
@@ -98,11 +98,19 @@ func test_released_finger_stops_writing_intent() -> void:
 	var touch_a: TouchMoveInput = main.get_node("TouchLayer/TouchA") as TouchMoveInput
 	var a: Character = main.get_node("CharacterA") as Character
 	var start: Vector2 = Vector2(width * 0.25, 300)
-	touch_a._input(_touch(0, true, start))
-	touch_a._input(_drag(0, start + Vector2(80, 0)))
+	touch_a._unhandled_input(_touch(0, true, start))
+	touch_a._unhandled_input(_drag(0, start + Vector2(touch_a.stick_radius_px(), 0)))
 	touch_a._physics_process(0.016)
-	touch_a._input(_touch(0, false, start))
+	touch_a._unhandled_input(_touch(0, false, start))
 	a.move_intent = Vector2.ZERO  # キーボード側が 0 を書いた状況
 	touch_a._physics_process(0.016)
 	check_vec_near(a.move_intent, Vector2.ZERO, "touch does not override after release")
+	_free_main(main)
+
+
+func test_stick_radius_follows_the_short_side() -> void:
+	var main: Node = _make_main()
+	var touch_a: TouchMoveInput = main.get_node("TouchLayer/TouchA") as TouchMoveInput
+	var size: Vector2 = main.get_viewport().get_visible_rect().size
+	check_near(touch_a.stick_radius_px(), minf(size.x, size.y) * touch_a.stick_radius_ratio, "ratio of short side")
 	_free_main(main)

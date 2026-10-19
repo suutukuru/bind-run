@@ -9,8 +9,9 @@ enum Side { LEFT, RIGHT }
 
 @export var target_path: NodePath
 @export var side: Side = Side.LEFT
-## スティックの最大半径（画面座標の px）。ここまで引くと intent の長さが 1 になる
-@export var stick_radius: float = 80.0
+## スティックの最大半径（画面の短辺に対する比率）。ここまで引くと intent の長さが 1 になる。
+## 縦持ち・横持ち・端末の大きさが違っても、指で扱う大きさが近くなるよう比率で持つ
+@export var stick_radius_ratio: float = 0.15
 
 ## 動かす対象。target_path から _ready で解決する
 var target: Character
@@ -36,13 +37,20 @@ func is_active() -> bool:
 	return _finger != -1
 
 
+## スティックの最大半径（画面座標の px）
+func stick_radius_px() -> float:
+	var size: Vector2 = get_viewport().get_visible_rect().size
+	return minf(size.x, size.y) * stick_radius_ratio
+
+
 func _ready() -> void:
 	target = get_node_or_null(target_path) as Character
 	if target == null:
 		push_error("TouchMoveInput: 対象が見つかりません: %s" % target_path)
 
 
-func _input(event: InputEvent) -> void:
+# _unhandled_input: ボタンなどの UI が先に処理した指は、スティックにしない
+func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch:
 		var touch: InputEventScreenTouch = event
 		if touch.pressed:
@@ -58,8 +66,16 @@ func _input(event: InputEvent) -> void:
 	elif event is InputEventScreenDrag:
 		var drag: InputEventScreenDrag = event
 		if drag.index == _finger:
-			_intent = intent_from_drag(_origin, drag.position, stick_radius)
+			_intent = intent_from_drag(_origin, drag.position, stick_radius_px())
 			queue_redraw()
+
+
+func _notification(what: int) -> void:
+	# ポーズなどで指の離れる通知を受け取れないことがあるため、状態をリセットする
+	if what == NOTIFICATION_PAUSED or what == NOTIFICATION_UNPAUSED:
+		_finger = -1
+		_intent = Vector2.ZERO
+		queue_redraw()
 
 
 func _physics_process(_delta: float) -> void:
@@ -77,5 +93,6 @@ func _draw() -> void:
 	if _finger == -1:
 		return
 	var color: Color = target.body_color if target != null else Color.WHITE
-	draw_circle(_origin, stick_radius, Color(color, 0.15))
-	draw_circle(_origin + _intent * stick_radius, 24.0, Color(color, 0.6))
+	var radius: float = stick_radius_px()
+	draw_circle(_origin, radius, Color(color, 0.15))
+	draw_circle(_origin + _intent * radius, radius * 0.3, Color(color, 0.6))
