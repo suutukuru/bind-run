@@ -1,7 +1,7 @@
 // 書き出した Web 版を実際の Chrome（スマホ相当の画面）で開き、画面に何が描かれているかを調べる。
 // 使い方: node browser_test.mjs <build/web のフォルダ>
 // 失敗したら終了コード 1。ブラウザのコンソール出力（Godot の print / エラー）も全部表示する。
-import { chromium } from 'playwright-core';
+import { chromium, webkit } from 'playwright-core';
 import { PNG } from 'pngjs';
 import http from 'node:http';
 import fs from 'node:fs';
@@ -22,11 +22,16 @@ const server = http.createServer((req, res) => {
 await new Promise((r) => server.listen(0, '127.0.0.1', r));
 const url = `http://127.0.0.1:${server.address().port}/index.html`;
 
-const browser = await chromium.launch({
-  executablePath: process.env.CHROME_PATH || '/usr/bin/google-chrome',
-  headless: true,
-  args: ['--no-sandbox', '--use-angle=swiftshader', '--use-gl=angle', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--enable-webgl'],
-});
+// BROWSER=webkit で Safari と同じ系統のエンジン（WebKit）でも調べる。タッチのドラッグ（CDP）は Chrome のみ
+const useWebkit = process.env.BROWSER === 'webkit';
+const browser = useWebkit
+  ? await webkit.launch({ headless: true })
+  : await chromium.launch({
+      executablePath: process.env.CHROME_PATH || '/usr/bin/google-chrome',
+      headless: true,
+      args: ['--no-sandbox', '--use-angle=swiftshader', '--use-gl=angle', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--enable-webgl'],
+    });
+console.log(`browser: ${useWebkit ? 'webkit' : 'chrome'}`);
 const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
 const page = await context.newPage();
 const logs = [];
@@ -61,7 +66,7 @@ function analyze(png) {
 }
 async function shot(name) {
   const buf = await page.screenshot();
-  fs.writeFileSync(`${name}.png`, buf);
+  fs.writeFileSync(`${useWebkit ? 'webkit-' : 'chrome-'}${name}.png`, buf);
   const a = analyze(PNG.sync.read(buf));
   console.log(`-- ${name}: ${JSON.stringify(a)}`);
   return a;
@@ -86,6 +91,7 @@ try {
   check(game.orange > 200, `orange character B is drawn (orange pixels: ${game.orange})`);
 
   // 左半分を左へドラッグ → A が B から離れる（ハブへ引き戻されながら）
+  if (useWebkit) throw new Error('__skip_drag__');
   const cdp = await context.newCDPSession(page);
   const touch = (type, points) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: points });
   await touch('touchStart', [{ x: 150, y: 600, id: 0 }]);
@@ -104,11 +110,11 @@ try {
     check(false, 'could not locate both characters to measure the drag');
   }
 } catch (e) {
-  check(false, `exception: ${e.message}`);
+  if (e.message !== '__skip_drag__') check(false, `exception: ${e.message}`);
 }
 
 console.log('==== browser console ====');
-for (const line of logs.slice(0, 120)) console.log(line);
+for (const line of logs.slice(0, 160)) console.log(line);
 await browser.close();
 server.close();
 process.exit(failures.length ? 1 : 0);

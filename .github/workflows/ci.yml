@@ -106,6 +106,13 @@ jobs:
           cp "$GITHUB_WORKSPACE/ci/browser_test.mjs" .
           node browser_test.mjs "$GITHUB_WORKSPACE/build/web"
 
+      - name: Browser test with WebKit (the engine family Safari uses; informational)
+        continue-on-error: true
+        run: |
+          cd "$RUNNER_TEMP/pw"
+          npx playwright-core install --with-deps webkit > /dev/null
+          BROWSER=webkit node browser_test.mjs "$GITHUB_WORKSPACE/build/web"
+
       - uses: actions/upload-artifact@v4
         with:
           name: web-build
