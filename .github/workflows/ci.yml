@@ -48,6 +48,14 @@ jobs:
           godot --headless --path . --export-release "Web" build/web/index.html
           ls -la build/web
 
+      - name: Check the build is single-threaded (no SharedArrayBuffer headers needed)
+        run: |
+          grep -o 'GODOT_CONFIG = {[^}]*}' build/web/index.html
+          if grep -q '"ensureCrossOriginIsolationHeaders":true' build/web/index.html; then
+            echo "::error::Web build requires cross-origin isolation (threads are on)"
+            exit 1
+          fi
+
       - uses: actions/upload-artifact@v4
         with:
           name: web-build
