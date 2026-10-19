@@ -26,7 +26,7 @@
 | TASK-013 | デバッグ表示（FPS・画面サイズ・位置・敵数）| 1 | P2 | S | Review（CI 済み・実機確認待ち）| TASK-010 |
 | TASK-014 | Phase 1 手動プレイテストと記録 | 1 | P1 | S | Ready（オーナー作業。owner-checklist 1〜2 章）| TASK-011〜013, 015, 016 |
 | TASK-015 | タッチ入力（フローティング仮想スティック）| 1 | P1 | S | Review（CI 済み・実機確認待ち）| TASK-009 |
-| TASK-016 | GitHub Actions で Web 版を書き出し Pages で公開 | 1 | P1 | M | Done（push ごとに自動公開。iPhone で表示確認済み）| TASK-004 |
+| TASK-016 | GitHub Actions で Web 版を書き出し Pages で公開 | 1 | P1 | M | Done（push ごとに自動公開。iPhone でゲームの動作まで確認済み）| TASK-004 |
 | TASK-020 | 弾性区間（自然長〜最大長で引き戻す）| 2 | P1 | M | Review（CI 済み・手触りは実機確認待ち）| TASK-014 |
 | TASK-021 | 限界時の方式切替（drag / block）| 2 | P1 | S | Review（同上）| TASK-020 |
 | TASK-022 | 紐パラメータの実行時調整パネル（TUNE）| 2 | P2 | S | Review（CI 済み・スマホ操作は実機確認待ち）| TASK-020 |
