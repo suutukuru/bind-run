@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="UpgradeDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/upgrade_def.gd" id="1_def"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"blaster_rate"
+title = "Blaster Speed"
+description = "-17% cooldown"
+target_path = NodePath("CharacterA/Weapon")
+property_path = NodePath("cooldown")
+amount = -0.17
+mode = 1
+max_stacks = 5

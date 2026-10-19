@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="UpgradeDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/upgrade_def.gd" id="1_def"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"rope_length"
+title = "Longer Rope"
+description = "+20 max length"
+target_path = NodePath("Rope")
+property_path = NodePath("config:max_radius")
+amount = 20.0
+mode = 0
+max_stacks = 4

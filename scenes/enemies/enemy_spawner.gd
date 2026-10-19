@@ -107,6 +107,10 @@ func _on_enemy_died(enemy: Enemy) -> void:
 	_drop_reward(enemy)
 
 
-# 経験値オーブの出現は TASK-040 で追加する
-func _drop_reward(_enemy: Enemy) -> void:
-	pass
+# 倒した敵の位置に経験値オーブを落とす
+func _drop_reward(enemy: Enemy) -> void:
+	var orb: XpOrb = XpOrb.new()
+	orb.value = enemy.def.xp_value
+	orb.position = enemy.position
+	orb.spawner = self
+	add_child(orb)

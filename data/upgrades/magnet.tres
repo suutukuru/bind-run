@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="UpgradeDef" format=3]
+
+[ext_resource type="Script" path="res://scripts/data/upgrade_def.gd" id="1_def"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"magnet"
+title = "Magnet"
+description = "+30% pickup range"
+target_path = NodePath("EnemySpawner")
+property_path = NodePath("orb_pickup_radius")
+amount = 0.3
+mode = 1
+max_stacks = 3
