@@ -48,6 +48,7 @@ godot --headless --fixed-fps 60 --path . --script res://tests/run_tests.gd
 |---|---|---|
 | 要件 | [requirements.md](docs/requirements/requirements.md) | 何を作るか、機能要件 ID、受け入れ条件、面白さの仮説 |
 | 設計 | [basic-design.md](docs/design/basic-design.md) | 全体構造、ゲームループ、シーン構成 |
+| 企画 | [game-design.md](docs/design/game-design.md) | **プレイテストの結果と企画の見直し案（検討中）** |
 | 設計 | [detailed-design.md](docs/design/detailed-design.md) | スクリプトとメソッドの仕様（Phase 1） |
 | 設計 | [architecture-decisions.md](docs/design/architecture-decisions.md) | 重要な判断とその理由（ADR） |
 | 設計 | [data-design.md](docs/design/data-design.md) | 定義データと状態データ |
