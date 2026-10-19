@@ -51,7 +51,7 @@ func _show_level_up() -> void:
 	for item: Variant in choices:
 		var def: UpgradeDef = item as UpgradeDef
 		options.append({"text": "%s\n%s" % [def.title, def.description], "callback": _on_upgrade_chosen.bind(def)})
-	_menu.open("LEVEL UP!  Lv %d" % _run_state.level, "Choose one upgrade", options)
+	_menu.open("レベルアップ！  Lv %d" % _run_state.level, "強化を 1 つ選ぼう", options)
 
 
 func _on_upgrade_chosen(def: UpgradeDef) -> void:
@@ -65,10 +65,10 @@ func _on_upgrade_chosen(def: UpgradeDef) -> void:
 func _open_pause() -> void:
 	if _menu.is_open() or not _run_state.running:
 		return
-	_menu.open("PAUSED", "", [
-		{"text": "RESUME", "callback": func() -> void: pass},
-		{"text": "RESTART", "callback": _restart},
-		{"text": "TITLE", "callback": _to_title},
+	_menu.open("ポーズ", "", [
+		{"text": "つづける", "callback": func() -> void: pass},
+		{"text": "やり直す", "callback": _restart},
+		{"text": "タイトルへ", "callback": _to_title},
 	])
 
 
@@ -76,10 +76,10 @@ func _on_finished(victory: bool) -> void:
 	_pending_level_ups = 0
 	var minutes: int = int(_run_state.elapsed) / 60
 	var seconds: int = int(_run_state.elapsed) % 60
-	var stats: String = "Time %02d:%02d   Level %d   Kills %d" % [minutes, seconds, _run_state.level, _run_state.kills]
-	_menu.open("VICTORY!" if victory else "GAME OVER", stats, [
-		{"text": "RETRY", "callback": _restart},
-		{"text": "TITLE", "callback": _to_title},
+	var stats: String = "時間 %02d:%02d   レベル %d   撃破 %d" % [minutes, seconds, _run_state.level, _run_state.kills]
+	_menu.open("クリア！" if victory else "ゲームオーバー", stats, [
+		{"text": "もう一度", "callback": _restart},
+		{"text": "タイトルへ", "callback": _to_title},
 	])
 
 

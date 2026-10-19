@@ -52,7 +52,7 @@ docs/                                 … ドキュメント（.gdignore で God
 - 処理順が重要なノードは `process_priority` を明示する（キーボード -10 → タッチ -9 → キャラ・敵・武器 0 → 紐 10 → 紐攻撃 11）。
 - **クラス自身の `enum` を変数の型にしない**（ゲーム起動時の読み込み順でスクリプトが読み込めなくなる。ADR-011）。int の定数 + `@export_enum` を使う。
 - **型付きのノード参照を `@export` しない**。`NodePath` を `@export` して `_ready()` で `get_node_or_null()` する（シーンから解決されないことがある）。
-- ゲーム内に出す文字は**英語のみ**（Web 版の標準フォントに日本語がない。日本語化はオーナーに相談してから。ADR-013）。UI の大きさは `UiScale.unit()`（画面の短辺の 1%）で決める。
+- ゲーム内の文字は**日本語**（`assets/fonts/ui_font.ttf` を `project.godot` の `gui/theme/custom_font` で全 UI に適用。ADR-013）。文言を足したら `python3 tools/subset_font.py` で使う文字を切り出し直す（足りない字は表示されない）。UI の大きさは `UiScale.unit()`（画面の短辺の 1%）で決める。
 - 書き出し後のビルドで `DirAccess` によるフォルダ走査に頼らない（`.tres` が `.remap` に変わる）。一覧は `preload` で持つ。
 - コメントは「なぜそうしたか」を書く。日本語で可。
 

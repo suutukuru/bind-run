@@ -81,7 +81,7 @@ func _on_xp_changed(xp: int, needed: int, _level: int) -> void:
 
 func _refresh_info() -> void:
 	var remaining: int = maxi(0, ceili(_run_state.run_duration - _run_state.elapsed))
-	_info.text = "LV %d   %02d:%02d   KILLS %d" % [_run_state.level, remaining / 60, remaining % 60, _run_state.kills]
+	_info.text = "Lv %d   %02d:%02d   撃破 %d" % [_run_state.level, remaining / 60, remaining % 60, _run_state.kills]
 
 
 # 画面の大きさ（向き）が変わるたびに、バー・文字・ボタンの大きさと位置を合わせ直す

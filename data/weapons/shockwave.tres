@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource("1_def")
-display_name = "Shockwave"
+display_name = "衝撃波"
 pattern = 1
 damage = 9.0
 cooldown = 1.1

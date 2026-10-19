@@ -52,3 +52,13 @@ func test_view_size_slider_changes_the_camera() -> void:
 	panel.set_view_size(1200.0)
 	check_near(camera.view_short_side, 1200.0, "camera view size")
 	_free_main(main)
+
+
+func test_japanese_ui_font_covers_the_game_text() -> void:
+	var font: Font = load("res://assets/fonts/ui_font.ttf") as Font
+	check_true(font != null, "font loads")
+	if font == null:
+		return
+	for text: String in ["スタート", "撃破", "紐の最大長", "レベルアップ"]:
+		for i: int in text.length():
+			check_true(font.has_char(text.unicode_at(i)), "glyph for %s" % text[i])

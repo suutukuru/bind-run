@@ -5,10 +5,10 @@
 [resource]
 script = ExtResource("1_def")
 id = &"rope_length"
-title = "Longer Rope"
-description = "+20 max length"
+title = "長い紐"
+description = "紐の最大長 +40"
 target_path = NodePath("Rope")
 property_path = NodePath("config:max_radius")
-amount = 20.0
+amount = 40.0
 mode = 0
 max_stacks = 4

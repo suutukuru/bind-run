@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_def")
 id = &"max_hp"
-title = "Tough"
-description = "+20 max HP (heals)"
+title = "タフネス"
+description = "最大 HP +20（回復）"
 target_path = NodePath("RunState")
 property_path = NodePath("max_hp")
 amount = 20.0

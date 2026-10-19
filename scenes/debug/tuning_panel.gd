@@ -10,12 +10,12 @@ extends CanvasLayer
 
 ## [プロパティ名, 表示名, 最小, 最大, 刻み]
 const SLIDERS: Array = [
-	["max_radius", "Max length", 60.0, 900.0, 5.0],
-	["natural_radius", "Slack length", 0.0, 800.0, 5.0],
-	["stiffness", "Elastic pull", 0.0, 12.0, 0.5],
-	["hub_follow_rate", "Hub inertia", 0.0, 20.0, 0.5],
-	["attack_damage", "Rope damage", 1.0, 60.0, 1.0],
-	["attack_threshold", "Rope attack at", 0.3, 1.0, 0.05],
+	["max_radius", "紐の最大長", 60.0, 900.0, 5.0],
+	["natural_radius", "たるみ", 0.0, 800.0, 5.0],
+	["stiffness", "弾性", 0.0, 12.0, 0.5],
+	["hub_follow_rate", "ハブの慣性", 0.0, 20.0, 0.5],
+	["attack_damage", "紐のダメージ", 1.0, 60.0, 1.0],
+	["attack_threshold", "紐攻撃の伸び率", 0.3, 1.0, 0.05],
 ]
 
 var _rope: Rope
@@ -54,7 +54,7 @@ func set_param(property: String, value: float) -> void:
 func set_view_size(value: float) -> void:
 	_camera.view_short_side = value
 	if _view_label != null:
-		_view_label.text = "View size %d" % int(value)
+		_view_label.text = "視界 %d" % int(value)
 
 
 func set_limit_mode(index: int) -> void:
@@ -68,7 +68,7 @@ func _build() -> void:
 	add_child(_root)
 
 	_toggle = Button.new()
-	_toggle.text = "TUNE"
+	_toggle.text = "調整"
 	_toggle.pressed.connect(func() -> void: _panel.visible = not _panel.visible)
 	_root.add_child(_toggle)
 
@@ -114,21 +114,21 @@ func _build() -> void:
 		set_view_size(_camera.view_short_side)
 
 	_mode = OptionButton.new()
-	_mode.add_item("Limit: drag partner")
-	_mode.add_item("Limit: block")
+	_mode.add_item("限界: 相方を引く")
+	_mode.add_item("限界: 止まる")
 	_mode.selected = _rope.config.limit_mode
 	_mode.item_selected.connect(set_limit_mode)
 	box.add_child(_mode)
 
 	var hub_check: CheckButton = CheckButton.new()
-	hub_check.text = "Show hub dot"
+	hub_check.text = "ハブを表示"
 	hub_check.button_pressed = _rope.show_hub
 	hub_check.toggled.connect(func(on: bool) -> void: _rope.show_hub = on)
 	box.add_child(hub_check)
 
 	if _overlay != null:
 		var text_check: CheckButton = CheckButton.new()
-		text_check.text = "Show debug text"
+		text_check.text = "デバッグ文字"
 		text_check.button_pressed = true
 		text_check.toggled.connect(func(on: bool) -> void: _overlay.set_text_visible(on))
 		box.add_child(text_check)

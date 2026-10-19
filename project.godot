@@ -14,6 +14,10 @@ config/name="bind-run"
 run/main_scene="res://scenes/title/title.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 
+[gui]
+
+theme/custom_font="res://assets/fonts/ui_font.ttf"
+
 [display]
 
 window/size/viewport_width=1280

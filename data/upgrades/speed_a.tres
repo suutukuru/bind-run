@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_def")
 id = &"speed_a"
-title = "Blue Speed"
-description = "+10% move speed"
+title = "青の足"
+description = "移動速度 +10%"
 target_path = NodePath("CharacterA")
 property_path = NodePath("move_speed")
 amount = 0.1

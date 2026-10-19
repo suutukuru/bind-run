@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_def")
 id = &"rope_damage"
-title = "Rope Damage"
-description = "+40% rope damage"
+title = "紐の威力"
+description = "紐のダメージ +40%"
 target_path = NodePath("Rope")
 property_path = NodePath("config:attack_damage")
 amount = 0.4

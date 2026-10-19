@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_def")
 id = &"blaster_damage"
-title = "Blaster Damage"
-description = "+30% damage"
+title = "ブラスターの威力"
+description = "威力 +30%"
 target_path = NodePath("CharacterA/Weapon")
 property_path = NodePath("damage")
 amount = 0.3

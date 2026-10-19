@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_def")
 id = &"rope_frenzy"
-title = "Rope Frenzy"
-description = "rope hits more often"
+title = "紐の連撃"
+description = "紐が当たる間隔が短くなる"
 target_path = NodePath("Rope")
 property_path = NodePath("config:attack_rehit_interval")
 amount = -0.2

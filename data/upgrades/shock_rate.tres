@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_def")
 id = &"shock_rate"
-title = "Shockwave Speed"
-description = "-15% cooldown"
+title = "衝撃波の連射"
+description = "間隔 -15%"
 target_path = NodePath("CharacterB/Weapon")
 property_path = NodePath("cooldown")
 amount = -0.15

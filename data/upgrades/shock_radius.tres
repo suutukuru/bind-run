@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_def")
 id = &"shock_radius"
-title = "Shockwave Radius"
-description = "+20% radius"
+title = "衝撃波の範囲"
+description = "範囲 +20%"
 target_path = NodePath("CharacterB/Weapon")
 property_path = NodePath("reach")
 amount = 0.2

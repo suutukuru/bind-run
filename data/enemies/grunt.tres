@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource("1_def")
-display_name = "Grunt"
+display_name = "ザコ"
 max_hp = 24.0
 move_speed = 75.0
 contact_damage = 6.0
