@@ -48,3 +48,11 @@
 - CI: 通しプレイの統合テスト、ゲーム起動のスモーク実行、テスト中の `SCRIPT ERROR` 検出を追加。テスト 76 件が成功。
 - データ設計の変更: `CharacterDef` と `WaveTable` は作らないことにした（理由は data-design.md）。
 - ロードマップ: Phase 6 以降はオーナーの確認結果と判断（向き・日本語化・素材・Android/Mac の有無）待ち。
+
+## 2026-10-19 iPhone で灰色しか出ない件の調査
+
+- 報告: 公開版を iPhone で開くと、濃い灰色（ほぼ黒）の画面しか見えない（BUG-006）。
+- 追加（CI）: 実ブラウザのテスト（Chrome を必須、WebKit を参考）。画面の画素、タッチのドラッグ、ブラウザのコンソール出力を CI のログで読めるようにした。
+- 結果: Chrome・WebKit ともゲームは描画される。原因は未特定。有力な仮説は iPhone の古いキャッシュと iPhone 固有の WebGL。
+- 対処: 公開 URL ごとに `index.pck?v=<コミット>` で取得させる（キャッシュ対策）。`?debug` で画面下にログと WebGL 情報を出す診断モードを追加（`ci/export_presets.web.cfg` の `html/head_include`）。
+- 訂正: 一時「WebKit で iPhone と同じ症状を再現できた」と報告したが、WebKit でも描画できていたため撤回した（WebGL エラーは出るが描画は止まっていなかった）。
