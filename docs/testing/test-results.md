@@ -46,6 +46,14 @@
 | GitHub Pages へのデプロイ | 成功。URL: https://suutukuru.github.io/bind-run/ |
 | 公開 URL へのアクセス | **未確認**（この環境から github.io に接続できない）。スマホでの表示確認はオーナー待ち（TASK-016c） |
 
+## 2026-10-19 iPhone 実機での Web 版表示（TASK-016c）
+
+- 実施者: オーナー（iPhone の Safari。機種・iOS バージョンは未記録）
+- 対象: Pages に公開された、空のシーンだけの版（コミット `bf2200c` 時点）。URL: https://suutukuru.github.io/bind-run/
+- 結果: **濃いめの灰色の画面が表示された**（`project.godot` の背景色 `Color(0.2, 0.2, 0.22)` と一致）。読み込みも完了した
+- 分かったこと: スレッドなし書き出しの Web 版は、iPhone の Safari で起動して描画できる
+- まだ確認できていないこと: 操作（タッチ）、キャラ表示後の挙動、フレームレート、横持ち/縦持ち、機種差
+
 ## 不具合一覧
 
 | BUG-ID | 現象 | 再現手順 | 期待結果 | 環境 | 重要度 | 状態 |
