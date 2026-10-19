@@ -70,6 +70,15 @@ InputMap（`project.godot` に定義）:
 | `debug_toggle_hub` | F1 | — |
 | `debug_toggle_overlay` | F3 | — |
 
+### 2.2b TouchMoveInput（`scripts/input/touch_move_input.gd`、TASK-015）
+
+- `Node2D`。`CanvasLayer`（TouchLayer）の下に A 用（LEFT）・B 用（RIGHT）の 2 つを置く。1 インスタンスが 1 本の指・1 キャラを担当
+- 画面の左半分で触れ始めた指 → LEFT、右半分 → RIGHT。触れた位置がスティックの中心（フローティング方式）
+- `intent = (指の位置 - 中心).limit_length(stick_radius) / stick_radius`（`static intent_from_drag`、テスト対象）
+- `process_priority = -9`。指が触れている間だけ `move_intent` を書く。離れている間はキーボード側（-10）が決める
+- 描画: 指の位置にキャラ色の半透明の円とつまみ。座標は CanvasLayer の画面座標（カメラの影響なし）
+- 未確認: `canvas_items` / `expand` のストレッチ下で、指の座標が表示と一致するか（実機で確認）。マウスでの擬似タッチ（`emulate_touch_from_mouse`）は、実機で二重入力にならない確証がないため入れていない
+
 ### 2.3 RopeConfig（`scripts/rope/rope_config.gd`）
 
 ```gdscript
