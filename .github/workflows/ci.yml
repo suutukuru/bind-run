@@ -50,9 +50,9 @@ jobs:
 
       - name: Check the build is single-threaded (no SharedArrayBuffer headers needed)
         run: |
-          grep -o 'GODOT_CONFIG = {[^}]*}' build/web/index.html
-          if grep -q '"ensureCrossOriginIsolationHeaders":true' build/web/index.html; then
-            echo "::error::Web build requires cross-origin isolation (threads are on)"
+          grep -n 'GODOT_THREADS_ENABLED' build/web/index.html
+          if ! grep -q 'GODOT_THREADS_ENABLED = false' build/web/index.html; then
+            echo "::error::Web build has threads enabled (or the flag was not found)"
             exit 1
           fi
 
