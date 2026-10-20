@@ -207,7 +207,7 @@ Main (Node2D, main.gd)                進行役: メニュー・強化の適用
 
 - **RunState**（`scripts/game/run_state.gd`）: 共有 HP、`elapsed`、`level`、`xp`、`kills`、`running`。信号: `hp_changed / xp_changed / leveled_up / finished(victory)`。`max_hp` を増やすと増えた分だけ HP も回復。`xp_needed(level) = 5 + (level−1) × 5`。
 - **Enemy**（`scenes/enemies/enemy.gd`、`class_name Enemy`）: 物理エンジンを使わない `Node2D`。最も近いキャラへ直進し、`radius + Character.RADIUS` 以内で `RunState.take_damage`（同じ敵は 0.7 秒の間隔）。`take_damage` で被弾、HP 0 で `died` を出して消える。グループ `enemies`。`rope_hit_ready_at` は紐攻撃の再ヒット管理用。
-- **EnemySpawner**: 画面外（見えている範囲の対角線の半分 + 80px）の円周に出現。静的関数 `interval_at / count_at / weights_at / pick_index` で出現を決める（1.1 秒 → 0.3 秒に 240 秒かけて短縮、90 秒ごとに 1 回の出現数が +1、Runner は 30 秒後・Tank は 90 秒後から混ざる、最大 180 体）。
+- **EnemySpawner**: 画面外（見えている範囲の対角線の半分 + 80px）の円周に出現。静的関数 `interval_at / count_at / weights_at / pick_index` で出現を決める（0.7 秒 → 0.2 秒に 240 秒かけて短縮、60 秒ごとに 1 回の出現数が +1、Runner は 30 秒後・Tank は 90 秒後から混ざる、最大 180 体）。
 - **Weapon**（`scenes/weapons/weapon.gd`）: キャラの子。`def: WeaponDef` を実行時のコピー（`damage / cooldown / reach / projectile_speed`）にして持つので、強化しても `.tres` は変わらない。`SHOT` は最も近い敵へ `Projectile` を撃つ（敵がいない間は待機し、現れた瞬間に撃つ）。`PULSE` は半径内の全敵に一度にダメージを与え `PulseEffect`（輪）を出す。
 - **RopeAttack**: Rope の後（優先度 11）に判定。伸び率が `attack_threshold` 以上のメンバーの紐（ハブ→メンバー）と各敵の距離が `敵の半径 + attack_half_width` 以内なら、再ヒット間隔つきでダメージ。武器とは別ノードで、互いを参照しない（FR-033）。
 

@@ -6,8 +6,8 @@ extends Node2D
 @export var defs: Array = []
 @export var camera_path: NodePath
 @export var run_state_path: NodePath
-@export var base_interval: float = 1.1
-@export var min_interval: float = 0.3
+@export var base_interval: float = 0.7
+@export var min_interval: float = 0.2
 ## 出現間隔が min_interval に達するまでの時間（秒）
 @export var ramp_seconds: float = 240.0
 @export var max_alive: int = 180
@@ -31,9 +31,9 @@ static func interval_at(t: float, base: float, min_value: float, ramp: float) ->
 	return lerpf(base, min_value, clampf(t / ramp, 0.0, 1.0))
 
 
-## 1 回の出現で出す数。1 分半ごとに 1 体増える
+## 1 回の出現で出す数。1 分ごとに 1 体増える
 static func count_at(t: float) -> int:
-	return 1 + int(t / 90.0)
+	return 1 + int(t / 60.0)
 
 
 ## 敵の種類の重み [Grunt, Runner, Tank]。Runner は 30 秒後、Tank は 90 秒後から混ざる

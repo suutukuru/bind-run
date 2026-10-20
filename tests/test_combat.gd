@@ -207,7 +207,7 @@ func test_spawner_schedule_helpers() -> void:
 	check_near(EnemySpawner.interval_at(240.0, 1.1, 0.3, 240.0), 0.3, "end")
 	check_near(EnemySpawner.interval_at(999.0, 1.1, 0.3, 240.0), 0.3, "clamped")
 	check_eq(EnemySpawner.count_at(0.0), 1, "count at 0")
-	check_eq(EnemySpawner.count_at(180.0), 3, "count at 180")
+	check_eq(EnemySpawner.count_at(180.0), 4, "count at 180")
 	check_eq(EnemySpawner.weights_at(0.0), PackedFloat32Array([1.0, 0.0, 0.0]), "only grunts at first")
 	check_true(EnemySpawner.weights_at(100.0)[2] > 0.0, "tanks appear later")
 	var w: PackedFloat32Array = PackedFloat32Array([1.0, 0.0, 1.0])
