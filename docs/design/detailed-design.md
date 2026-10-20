@@ -228,7 +228,7 @@ Main (Node2D, main.gd)                進行役: メニュー・強化の適用
 ## 14. 開発用（DebugOverlay / TuningPanel）
 
 - `DebugOverlay`: 0.2 秒ごとに FPS・表示サイズ・ウィンドウサイズ・A/B の位置・距離・伸び率・敵数を表示。F3 で切替。
-- `TuningPanel`: 右上の TUNE で開閉。`Rope.config` の複製の `max_radius / natural_radius / stiffness / hub_follow_rate / attack_damage / attack_threshold` をスライダーで、`limit_mode` を選択で、ハブの点とデバッグ文字をチェックで変える。
+- `TuningPanel`: 右上の TUNE で開閉。`Rope.config` の複製の `max_radius / natural_radius / stiffness / hub_follow_rate / attack_damage / attack_threshold / attack_half_width` をスライダーで、`limit_mode` を選択で、ハブの点とデバッグ文字をチェックで変える。
 
 ## 15. テスト（現状）
 
