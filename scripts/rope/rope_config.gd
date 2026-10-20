@@ -22,9 +22,9 @@ const BLOCK: int = 1
 
 @export_group("Rope Attack")
 ## 伸び率がこの値以上のとき、紐に触れた敵にダメージを与える
-@export var attack_threshold: float = 0.9
+@export var attack_threshold: float = 0.7
 @export var attack_damage: float = 10.0
 ## 同じ敵に再びダメージを与えるまでの間隔（秒）
 @export var attack_rehit_interval: float = 0.4
 ## 紐の太さの半分（当たり判定に足す）
-@export var attack_half_width: float = 8.0
+@export var attack_half_width: float = 30.0

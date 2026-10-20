@@ -16,6 +16,7 @@ const SLIDERS: Array = [
 	["hub_follow_rate", "ハブの慣性", 0.0, 20.0, 0.5],
 	["attack_damage", "紐のダメージ", 1.0, 60.0, 1.0],
 	["attack_threshold", "紐攻撃の伸び率", 0.3, 1.0, 0.05],
+	["attack_half_width", "紐の当たり幅", 4.0, 80.0, 2.0],
 ]
 
 var _rope: Rope

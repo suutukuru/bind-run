@@ -115,8 +115,8 @@ func _draw() -> void:
 		# 張るほど細く・赤くして、限界が近いことを見た目で伝える
 		var end: Vector2 = to_local(_members[i].global_position)
 		if attack_active:
-			# 紐攻撃が有効な間は太い光を重ねて、触れると痛いことを伝える
-			draw_line(hub_local, end, Color(1, 1, 1, 0.35), 18.0, true)
+			# 紐攻撃が有効な間は当たり判定と同じ太さの光を重ねて、触れると痛い範囲を伝える
+			draw_line(hub_local, end, Color(1, 1, 1, 0.35), config.attack_half_width * 2.0, true)
 		draw_line(hub_local, end, color_for_stretch(ratio), 6.0 - 3.0 * ratio, true)
 	if show_hub:
 		draw_circle(hub_local, 5.0, Color.WHITE)
