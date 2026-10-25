@@ -13,6 +13,12 @@ extends Node2D
 @export var max_alive: int = 180
 ## 経験値オーブを拾える距離（強化「Magnet」の対象）
 @export var orb_pickup_radius: float = 70.0
+## ステージごとの難しさ（Main がラン開始時に設定する）。出現間隔に掛ける倍率。小さいほど多い
+@export var interval_scale: float = 1.0
+## 敵の HP に掛ける倍率
+@export var hp_scale: float = 1.0
+## 1 分ごとに敵の HP の倍率に足す量（エンドレスで時間とともに硬くするため）
+@export var hp_growth_per_minute: float = 0.0
 ## 0 以外なら乱数を固定する（テスト用）
 @export var seed_value: int = 0
 
@@ -73,12 +79,14 @@ func _physics_process(delta: float) -> void:
 	var t: float = _run_state.elapsed if _run_state != null else 0.0
 	for i: int in count_at(t):
 		_spawn_one(t)
-	_timer = interval_at(t, base_interval, min_interval, ramp_seconds)
+	_timer = interval_at(t, base_interval, min_interval, ramp_seconds) * interval_scale
 
 
 func spawn_enemy(def: EnemyDef, pos: Vector2) -> Enemy:
 	var enemy: Enemy = Enemy.new()
 	enemy.def = def
+	var t: float = _run_state.elapsed if _run_state != null else 0.0
+	enemy.hp_scale = hp_scale + hp_growth_per_minute * t / 60.0
 	enemy.position = pos
 	enemy.died.connect(_on_enemy_died)
 	add_child(enemy)

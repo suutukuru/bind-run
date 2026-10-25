@@ -157,19 +157,6 @@ func test_game_over_shows_the_result_menu() -> void:
 	var menu: MenuPanel = main.get_node("MenuPanel") as MenuPanel
 	state.take_damage(state.max_hp)
 	check_true(menu.is_open(), "result menu")
-	check_eq(menu.option_count(), 2, "RETRY and TITLE")
+	check_eq(menu.option_count(), 2, "retry and home")
 	check_true(tree.paused, "game stopped")
 	_free_main(main)
-
-
-func test_title_scene_builds_its_menu() -> void:
-	var title: Node = (load("res://scenes/title/title.tscn") as PackedScene).instantiate()
-	tree.root.add_child(title)
-	var menu: MenuPanel = null
-	for child: Node in title.get_children():
-		if child is MenuPanel:
-			menu = child
-	check_true(menu != null and menu.is_open(), "title menu is open")
-	check_true(not tree.paused, "the title does not pause the tree")
-	tree.root.remove_child(title)
-	title.free()

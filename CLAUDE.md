@@ -36,9 +36,9 @@ Godot 4.7.x / GDScript / 外部アドオンなし。Godot プロジェクトは�
 
 ```
 project.godot
-scenes/<分類>/<名前>.tscn と同名 .gd   … シーンとその専用スクリプト（main, characters, rope, enemies, weapons, camera, ui, title, debug）
+scenes/<分類>/<名前>.tscn と同名 .gd   … シーンとその専用スクリプト（home, main, characters, rope, enemies, weapons, camera, world, ui, debug）
 scripts/<分類>/*.gd                   … シーンに属さないスクリプト（input, rope（純粋計算・設定）, game（RunState・強化）, data（Resource 定義）, ui）
-data/<分類>/*.tres                    … 定義データ（rope, enemies, weapons, upgrades）
+data/<分類>/*.tres                    … 定義データ（rope, enemies, weapons, upgrades, stages）
 tests/run_tests.gd, tests/test_*.gd   … 単体テスト
 docs/                                 … ドキュメント（.gdignore で Godot の読み込み対象外）
 ```
@@ -85,6 +85,6 @@ docs/                                 … ドキュメント（.gdignore で God
 ## 現在の状況と未解決の課題
 
 - Phase 5 まで実装済み（CI で 76 件成功）。**実機での確認待ち**（`docs/testing/owner-checklist.md`）。
-- 企画の見直し中（`docs/design/game-design.md`）: プレイテスト PT-001 の結果（操作の負担・紐の役割・難しさ・視界）。オーナーは**独立移動を残したい**（FR-001/002 維持）、持ち方は**横持ち両手またはマルチプレイ**と回答。次に作るものは**保留（オーナーが検討中。勝手に着手しない）**。
-- オーナーの判断待ち: 画面の向き（U-01、横持ちが第一候補）、紐の主役（刃/柵/絆）、HP 共有か個別か（U-05）、日本語化（フォント同梱の可否）、素材の方針、Mac / Android 端末の有無（U-08）。
+- 企画の見直し中（`docs/design/game-design.md`）: プレイテスト PT-001 の結果（操作の負担・紐の役割・難しさ・視界）。オーナーは**独立移動を残したい**（FR-001/002 維持）、持ち方は**横持ち両手またはマルチプレイ**と回答。ホーム画面・ステージ／エンドレスはオーナー指示で実装（ADR-016）。操作方式・紐の主役は**検討中（勝手に着手しない）**。
+- オーナーの判断待ち: 画面の向き（U-01、横持ちが第一候補）、紐の主役（刃/柵/絆）、HP 共有か個別か（U-05）、素材の方針、Mac / Android 端末の有無（U-08）。
 - 紐の方式（drag / block）・弾性・慣性ハブは仮の既定値。調整パネル（TUNE）での比較結果を待つ。

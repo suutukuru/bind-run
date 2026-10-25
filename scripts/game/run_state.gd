@@ -8,7 +8,7 @@ signal xp_changed(xp: int, needed: int, level: int)
 signal leveled_up(level: int)
 signal finished(victory: bool)
 
-## 生き残ればクリアになる時間（秒）。FR-052 の初期値は 5 分
+## 生き残ればクリアになる時間（秒）。FR-052 の初期値は 5 分。0 以下なら時間切れなし（エンドレス）
 @export var run_duration: float = 300.0
 @export var max_hp: float = 100.0:
 	set(value):
@@ -36,6 +36,12 @@ static func xp_needed(for_level: int) -> int:
 	return 5 + (for_level - 1) * 5
 
 
+## 秒を「分:秒」の文字にする（HUD・結果・ホームで同じ書き方にする）
+static func format_time(seconds: float) -> String:
+	var total: int = maxi(0, int(seconds))
+	return "%02d:%02d" % [total / 60, total % 60]
+
+
 func _ready() -> void:
 	add_to_group("run_state")
 	hp = max_hp
@@ -48,7 +54,7 @@ func _physics_process(delta: float) -> void:
 	if not running:
 		return
 	elapsed += delta
-	if elapsed >= run_duration:
+	if run_duration > 0.0 and elapsed >= run_duration:
 		_finish(true)
 
 

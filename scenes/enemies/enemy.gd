@@ -11,6 +11,8 @@ const CONTACT_INTERVAL: float = 0.7
 
 var def: EnemyDef
 var hp: float = 1.0
+## 出現時の HP の倍率（ステージ・エンドレスの難しさ）。追加前に EnemySpawner が設定する
+var hp_scale: float = 1.0
 ## 紐攻撃で次にダメージを受けられる時刻（RopeAttack の時計で測る）
 var rope_hit_ready_at: float = 0.0
 
@@ -26,7 +28,7 @@ func _ready() -> void:
 	if def == null:
 		push_error("Enemy: def が未設定です")
 		return
-	hp = def.max_hp
+	hp = def.max_hp * hp_scale
 	_characters = get_tree().get_nodes_in_group("characters")
 	_run_state = get_tree().get_first_node_in_group("run_state") as RunState
 

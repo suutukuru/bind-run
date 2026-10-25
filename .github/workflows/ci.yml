@@ -69,7 +69,7 @@ jobs:
       - name: Smoke run (the game scene must run 300 frames without script errors)
         run: |
           set +e
-          for scene in res://scenes/title/title.tscn res://scenes/main/main.tscn; do
+          for scene in res://scenes/home/home.tscn res://scenes/main/main.tscn; do
             out=$(godot --headless --path . $scene --quit-after 300 2>&1)
             rc=$?
             echo "== $scene (exit $rc)"

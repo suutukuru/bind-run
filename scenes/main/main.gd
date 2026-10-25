@@ -1,7 +1,8 @@
 extends Node2D
 ## ゲーム本編の進行役: レベルアップ・ポーズ・結果のメニューを出し、強化を適用する。
+## ホームで選んだ遊び方（RunSetup: ステージ / エンドレス）に合わせてランを設定し、結果を SaveData に記録する。
 
-const TITLE_SCENE: String = "res://scenes/title/title.tscn"
+const HOME_SCENE: String = "res://scenes/home/home.tscn"
 ## レベルアップで提示する強化の数（FR-043 の仮決定）
 const CHOICES: int = 3
 
@@ -9,6 +10,12 @@ const CHOICES: int = 3
 @onready var _run_state: RunState = $RunState
 @onready var _menu: MenuPanel = $MenuPanel
 @onready var _hud: Hud = $Hud
+@onready var _spawner: EnemySpawner = $EnemySpawner
+@onready var _tuning: TuningPanel = $TuningPanel
+@onready var _overlay: DebugOverlay = $DebugOverlay
+
+## エンドレスで、敵の HP の倍率に 1 分ごとに足す量（時間とともに硬くなる）
+@export var endless_hp_growth_per_minute: float = 0.25
 
 var _upgrade_counts: Dictionary = {}
 var _pending_level_ups: int = 0
@@ -21,6 +28,31 @@ func _ready() -> void:
 	_run_state.leveled_up.connect(_on_leveled_up)
 	_run_state.finished.connect(_on_finished)
 	_hud.pause_requested.connect(_open_pause)
+	_apply_settings()
+	_apply_run_setup()
+
+
+# ホームの設定画面で選んだ表示（開発用の調整ボタン・デバッグ文字・ハブの点）
+func _apply_settings() -> void:
+	_tuning.set_toggle_visible(bool(SaveData.get_setting("show_tuning", true)))
+	_overlay.set_text_visible(bool(SaveData.get_setting("debug_text", true)))
+	_rope.show_hub = bool(SaveData.get_setting("show_hub", false))
+
+
+func _apply_run_setup() -> void:
+	if RunSetup.mode == RunSetup.STAGE:
+		var stage: StageDef = StagePool.get_stage(RunSetup.stage_number)
+		if stage == null:
+			push_error("Main: ステージ %d がありません" % RunSetup.stage_number)
+			return
+		_run_state.run_duration = stage.duration
+		_spawner.interval_scale = stage.spawn_interval_scale
+		_spawner.hp_scale = stage.enemy_hp_scale
+		_hud.caption = "ステージ %d" % stage.number
+	elif RunSetup.mode == RunSetup.ENDLESS:
+		_run_state.run_duration = 0.0
+		_spawner.hp_growth_per_minute = endless_hp_growth_per_minute
+		_hud.caption = "エンドレス"
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -68,24 +100,57 @@ func _open_pause() -> void:
 	_menu.open("ポーズ", "", [
 		{"text": "つづける", "callback": func() -> void: pass},
 		{"text": "やり直す", "callback": _restart},
-		{"text": "タイトルへ", "callback": _to_title},
+		{"text": "ホームへ", "callback": _to_home},
 	])
 
 
 func _on_finished(victory: bool) -> void:
 	_pending_level_ups = 0
-	var minutes: int = int(_run_state.elapsed) / 60
-	var seconds: int = int(_run_state.elapsed) % 60
-	var stats: String = "時間 %02d:%02d   レベル %d   撃破 %d" % [minutes, seconds, _run_state.level, _run_state.kills]
-	_menu.open("クリア！" if victory else "ゲームオーバー", stats, [
+	var stats: String = "時間 %s   レベル %d   撃破 %d" % [RunState.format_time(_run_state.elapsed), _run_state.level, _run_state.kills]
+	if RunSetup.mode == RunSetup.STAGE:
+		_finish_stage(victory, stats)
+	elif RunSetup.mode == RunSetup.ENDLESS:
+		_finish_endless(stats)
+	else:
+		_menu.open("クリア！" if victory else "ゲームオーバー", stats, _retry_and_home())
+
+
+func _finish_stage(victory: bool, stats: String) -> void:
+	var number: int = RunSetup.stage_number
+	if not victory:
+		_menu.open("ステージ %d 失敗" % number, stats, _retry_and_home())
+		return
+	SaveData.record_stage_clear(number)
+	var options: Array = []
+	var body: String = stats + "\n全ステージクリア！"
+	if StagePool.get_stage(number + 1) != null:
+		options.append({"text": "次のステージへ", "callback": _next_stage})
+		body = stats + "\nステージ %d が開放された" % (number + 1)
+	options.append_array(_retry_and_home())
+	_menu.open("ステージ %d クリア！" % number, body, options)
+
+
+func _finish_endless(stats: String) -> void:
+	var new_best: bool = SaveData.record_endless(_run_state.elapsed)
+	var best_line: String = "最高記録を更新！" if new_best else "最高記録 %s" % RunState.format_time(SaveData.endless_best())
+	_menu.open("記録 %s" % RunState.format_time(_run_state.elapsed), stats + "\n" + best_line, _retry_and_home())
+
+
+func _retry_and_home() -> Array:
+	return [
 		{"text": "もう一度", "callback": _restart},
-		{"text": "タイトルへ", "callback": _to_title},
-	])
+		{"text": "ホームへ", "callback": _to_home},
+	]
+
+
+func _next_stage() -> void:
+	RunSetup.start_stage(RunSetup.stage_number + 1)
+	get_tree().reload_current_scene()
 
 
 func _restart() -> void:
 	get_tree().reload_current_scene()
 
 
-func _to_title() -> void:
-	get_tree().change_scene_to_file(TITLE_SCENE)
+func _to_home() -> void:
+	get_tree().change_scene_to_file(HOME_SCENE)

@@ -30,6 +30,8 @@ var _sliders: Dictionary = {}
 var _value_labels: Dictionary = {}
 var _view_slider: HSlider
 var _view_label: Label
+var _hub_check: CheckButton
+var _text_check: CheckButton
 
 
 func _ready() -> void:
@@ -51,6 +53,25 @@ func set_param(property: String, value: float) -> void:
 	_update_label(property)
 
 
+## 右上の「調整」ボタンの表示（ホームの設定で切り替える）。隠すときはパネルも閉じる
+func set_toggle_visible(on: bool) -> void:
+	if _toggle == null:
+		return
+	_toggle.visible = on
+	if not on:
+		_panel.visible = false
+
+
+func _on_toggle_pressed() -> void:
+	_panel.visible = not _panel.visible
+	if not _panel.visible:
+		return
+	# 設定画面など、パネルの外で変わった表示状態に合わせ直す
+	_hub_check.set_pressed_no_signal(_rope.show_hub)
+	if _text_check != null:
+		_text_check.set_pressed_no_signal(_overlay.is_text_visible())
+
+
 ## 画面の短辺に映すワールドの長さ（視界の広さ）を変える
 func set_view_size(value: float) -> void:
 	_camera.view_short_side = value
@@ -70,7 +91,7 @@ func _build() -> void:
 
 	_toggle = Button.new()
 	_toggle.text = "調整"
-	_toggle.pressed.connect(func() -> void: _panel.visible = not _panel.visible)
+	_toggle.pressed.connect(_on_toggle_pressed)
 	_root.add_child(_toggle)
 
 	_panel = PanelContainer.new()
@@ -121,18 +142,18 @@ func _build() -> void:
 	_mode.item_selected.connect(set_limit_mode)
 	box.add_child(_mode)
 
-	var hub_check: CheckButton = CheckButton.new()
-	hub_check.text = "ハブを表示"
-	hub_check.button_pressed = _rope.show_hub
-	hub_check.toggled.connect(func(on: bool) -> void: _rope.show_hub = on)
-	box.add_child(hub_check)
+	_hub_check = CheckButton.new()
+	_hub_check.text = "ハブを表示"
+	_hub_check.button_pressed = _rope.show_hub
+	_hub_check.toggled.connect(func(on: bool) -> void: _rope.show_hub = on)
+	box.add_child(_hub_check)
 
 	if _overlay != null:
-		var text_check: CheckButton = CheckButton.new()
-		text_check.text = "デバッグ文字"
-		text_check.button_pressed = true
-		text_check.toggled.connect(func(on: bool) -> void: _overlay.set_text_visible(on))
-		box.add_child(text_check)
+		_text_check = CheckButton.new()
+		_text_check.text = "デバッグ文字"
+		_text_check.button_pressed = true
+		_text_check.toggled.connect(func(on: bool) -> void: _overlay.set_text_visible(on))
+		box.add_child(_text_check)
 
 
 func _update_label(property: String) -> void:

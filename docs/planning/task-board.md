@@ -47,6 +47,7 @@
 | TASK-051 | タイトル画面 | 5 | P1 | S | Review（CI 済み・実機確認待ち）| TASK-042 |
 | TASK-052 | ポーズ・結果画面・リトライ | 5 | P1 | S | Review（CI 済み・実機確認待ち）| TASK-042 |
 | TASK-053 | 通しプレイの統合テスト（ボットが勝利/敗北まで自動プレイ）| 5 | P1 | M | Done（CI で成功）| TASK-052 |
+| TASK-055 | ホーム画面・ツールバー・ステージ 10 個・エンドレス・保存・設定（ADR-016）| 5 | P1 | L | Review（CI の結果待ち・実機確認待ち）| TASK-052 |
 | TASK-060 | 縦持ち・横持ちの確定とスマホ操作の仕上げ（Phase 6）| 6 | P1 | M | Backlog（U-01 の決定後）| owner-checklist |
 | TASK-070 | 見た目・効果音・BGM・キャラ/武器/敵/強化の追加（Phase 7）| 7 | P2 | XL | Backlog（素材の方針が未決定。分割してから着手）| TASK-060 |
 | TASK-080 | Android 向けビルドとテスト（Phase 8）| 8 | P2 | L | Backlog（Android SDK・署名キー。署名キーは公開リポジトリに入れない）| TASK-070 |

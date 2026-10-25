@@ -1,10 +1,16 @@
 class_name Hud
 extends CanvasLayer
-## 画面上部の HP バー・経験値バー・残り時間・レベル、ポーズボタン。表示だけを担当する。
+## 画面上部の HP バー・経験値バー・残り時間（エンドレスでは経過時間）・レベル、ポーズボタン。表示だけを担当する。
 
 signal pause_requested
 
 @export var run_state_path: NodePath
+## 先頭に出す文字（「ステージ 3」「エンドレス」など）
+var caption: String = "":
+	set(value):
+		caption = value
+		if _info != null:
+			_refresh_info()
 
 var _run_state: RunState
 var _hp_bar: ProgressBar
@@ -33,10 +39,17 @@ func _process(_delta: float) -> void:
 	if _run_state == null:
 		return
 	# 文字は 1 秒ごとにだけ作り直す
-	var remaining: int = maxi(0, ceili(_run_state.run_duration - _run_state.elapsed))
-	if remaining != _shown_second:
-		_shown_second = remaining
+	var shown: int = _shown_time()
+	if shown != _shown_second:
+		_shown_second = shown
 		_refresh_info()
+
+
+# 時間制限があれば残り時間、なければ（エンドレス）経過時間
+func _shown_time() -> int:
+	if _run_state.run_duration <= 0.0:
+		return int(_run_state.elapsed)
+	return maxi(0, ceili(_run_state.run_duration - _run_state.elapsed))
 
 
 func _build() -> void:
@@ -80,8 +93,8 @@ func _on_xp_changed(xp: int, needed: int, _level: int) -> void:
 
 
 func _refresh_info() -> void:
-	var remaining: int = maxi(0, ceili(_run_state.run_duration - _run_state.elapsed))
-	_info.text = "Lv %d   %02d:%02d   撃破 %d" % [_run_state.level, remaining / 60, remaining % 60, _run_state.kills]
+	var head: String = caption + "   " if caption != "" else ""
+	_info.text = "%sLv %d   %s   撃破 %d" % [head, _run_state.level, RunState.format_time(_shown_time()), _run_state.kills]
 
 
 # 画面の大きさ（向き）が変わるたびに、バー・文字・ボタンの大きさと位置を合わせ直す

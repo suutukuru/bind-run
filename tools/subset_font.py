@@ -39,6 +39,12 @@ def collect_chars() -> set[str]:
 
 def main() -> int:
 	chars = collect_chars()
+	cmap = TTFont(str(SOURCE)).getBestCmap()
+	missing = sorted(c for c in chars if ord(c) not in cmap and c not in "\t\r")
+	if missing:
+		# 元のフォントに無い字は表示できない（□になる）。文言を変えるか、別の字に置き換える
+		print("missing in the source font: " + " ".join(f"{c}(U+{ord(c):04X})" for c in missing))
+		return 1
 	options = subset.Options()
 	options.layout_features = ["*"]
 	options.name_IDs = [1, 2, 3, 4, 6]

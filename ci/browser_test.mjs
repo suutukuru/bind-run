@@ -91,7 +91,7 @@ try {
   // ゲームの pack を、デプロイごとに変わる URL（?v=...）で取りに行っていること（古いキャッシュを使わせないため）
   check(packRequests.some((u) => /\.pck\?v=[0-9a-f]{7,}/.test(u)), `the game pack is requested with a cache-busting query (${packRequests.join(', ') || 'no .pck request'})`);
 
-  // Enter で START（先頭のボタンにフォーカスがある）
+  // Enter で出撃（ホームの「出撃」ボタンにフォーカスがある）
   await page.keyboard.press('Enter');
   await page.waitForTimeout(2500);
   const game = await shot('game');

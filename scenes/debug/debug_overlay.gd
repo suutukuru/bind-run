@@ -31,6 +31,10 @@ func _process(delta: float) -> void:
 		_refresh()
 
 
+func is_text_visible() -> bool:
+	return _label != null and _label.visible
+
+
 func set_text_visible(on: bool) -> void:
 	_label.visible = on
 	_refresh()
