@@ -6,6 +6,6 @@
 script = ExtResource("1_def")
 number = 4
 note = "硬いタンクが現れる"
-duration = 180.0
+boss_time = 300.0
 spawn_interval_scale = 1.0
 enemy_hp_scale = 1.0

@@ -6,6 +6,6 @@
 script = ExtResource("1_def")
 number = 8
 note = "強化の選び方が大事"
-duration = 240.0
+boss_time = 300.0
 spawn_interval_scale = 0.75
 enemy_hp_scale = 1.6

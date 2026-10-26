@@ -16,6 +16,8 @@ const CHOICES: int = 3
 
 ## エンドレスで、敵の HP の倍率に 1 分ごとに足す量（時間とともに硬くなる）
 @export var endless_hp_growth_per_minute: float = 0.25
+## エンドレスでボスが出る間隔（秒）
+@export var endless_boss_interval: float = 300.0
 
 var _upgrade_counts: Dictionary = {}
 var _pending_level_ups: int = 0
@@ -28,6 +30,8 @@ func _ready() -> void:
 	_run_state.leveled_up.connect(_on_leveled_up)
 	_run_state.finished.connect(_on_finished)
 	_hud.pause_requested.connect(_open_pause)
+	_spawner.boss_spawned.connect(_hud.show_boss)
+	_spawner.boss_defeated.connect(_on_boss_defeated)
 	_apply_settings()
 	_apply_run_setup()
 
@@ -45,12 +49,16 @@ func _apply_run_setup() -> void:
 		if stage == null:
 			push_error("Main: ステージ %d がありません" % RunSetup.stage_number)
 			return
-		_run_state.run_duration = stage.duration
+		# 時間切れでのクリアはなく、5 分でボスが出て、倒すとクリア
+		_run_state.run_duration = 0.0
+		_run_state.boss_at = stage.boss_time
 		_spawner.interval_scale = stage.spawn_interval_scale
 		_spawner.hp_scale = stage.enemy_hp_scale
 		_hud.caption = "ステージ %d" % stage.number
 	elif RunSetup.mode == RunSetup.ENDLESS:
 		_run_state.run_duration = 0.0
+		_run_state.boss_at = endless_boss_interval
+		_hud.show_elapsed = true
 		_spawner.hp_growth_per_minute = endless_hp_growth_per_minute
 		_hud.caption = "エンドレス"
 
@@ -113,6 +121,15 @@ func _on_finished(victory: bool) -> void:
 		_finish_endless(stats)
 	else:
 		_menu.open("クリア！" if victory else "ゲームオーバー", stats, _retry_and_home())
+
+
+func _on_boss_defeated(_boss: Boss) -> void:
+	if RunSetup.mode == RunSetup.STAGE:
+		_run_state.win()
+	elif RunSetup.mode == RunSetup.ENDLESS:
+		# エンドレスは続く。次のボスは倒してから一定時間後
+		_run_state.boss_at = _run_state.elapsed + endless_boss_interval
+		_hud.announce("ボス撃破！")
 
 
 func _finish_stage(victory: bool, stats: String) -> void:

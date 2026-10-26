@@ -33,6 +33,11 @@ func _ready() -> void:
 	_run_state = get_tree().get_first_node_in_group("run_state") as RunState
 
 
+## 出現時の最大 HP（倍率込み）。ボスの HP バーなどに使う
+func max_hp() -> float:
+	return def.max_hp * hp_scale if def != null else 1.0
+
+
 func take_damage(amount: float) -> void:
 	if _dead:
 		return
@@ -59,12 +64,21 @@ func _physics_process(delta: float) -> void:
 	var target: Character = _nearest_character()
 	if target == null:
 		return
+	_move(delta, target)
+	_contact(delta, target)
+
+
+## 動き方。ふつうの敵はまっすぐ近づくだけ（ボスは上書きする）
+func _move(delta: float, target: Character) -> void:
 	var to_target: Vector2 = target.global_position - global_position
 	var dist: float = to_target.length()
 	if dist > 0.001:
 		global_position += to_target / dist * def.move_speed * delta
 
+
+func _contact(delta: float, target: Character) -> void:
 	_contact_cooldown = maxf(0.0, _contact_cooldown - delta)
+	var dist: float = global_position.distance_to(target.global_position)
 	if dist <= def.radius + Character.RADIUS and _contact_cooldown <= 0.0 and _run_state != null:
 		_run_state.take_damage(def.contact_damage)
 		_contact_cooldown = CONTACT_INTERVAL

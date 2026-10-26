@@ -6,6 +6,6 @@
 script = ExtResource("1_def")
 number = 9
 note = "押し寄せる群れ"
-duration = 270.0
+boss_time = 300.0
 spawn_interval_scale = 0.7
 enemy_hp_scale = 1.8

@@ -6,6 +6,6 @@
 script = ExtResource("1_def")
 number = 2
 note = "紐を張って敵をなぎ払おう"
-duration = 120.0
+boss_time = 300.0
 spawn_interval_scale = 1.2
 enemy_hp_scale = 0.85

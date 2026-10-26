@@ -10,3 +10,5 @@ extends Resource
 @export var xp_value: int = 1
 @export var radius: float = 18.0
 @export var color: Color = Color(0.85, 0.3, 0.3)
+## 紐攻撃のダメージに掛ける倍率（ボスは紐でよく削れるようにして、紐の出番を作る）
+@export var rope_damage_multiplier: float = 1.0

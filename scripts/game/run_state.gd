@@ -27,6 +27,8 @@ var level: int = 1
 var xp: int = 0
 var kills: int = 0
 var running: bool = true
+## 次のボスが出る時間（秒）。0 ならボスは出ない（ボスが出た時点で EnemySpawner が 0 に戻す）
+var boss_at: float = 0.0
 
 var _ready_done: bool = false
 
@@ -82,6 +84,12 @@ func add_xp(amount: int) -> void:
 		level += 1
 		leveled_up.emit(level)
 	xp_changed.emit(xp, xp_needed(level), level)
+
+
+## ボスを倒したなど、時間以外の理由でクリアにする
+func win() -> void:
+	if running:
+		_finish(true)
 
 
 func _finish(victory: bool) -> void:

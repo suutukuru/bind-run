@@ -46,6 +46,6 @@ func step(delta: float) -> void:
 				continue
 			var reach: float = enemy.def.radius + config.attack_half_width
 			if RopeModel.distance_to_segment(enemy.global_position, _rope.hub, end) <= reach:
-				enemy.take_damage(config.attack_damage)
+				enemy.take_damage(config.attack_damage * enemy.def.rope_damage_multiplier)
 				enemy.rope_hit_ready_at = _clock + config.attack_rehit_interval
 	_rope.attack_active = active

@@ -244,5 +244,15 @@ Main (Node2D, main.gd)                進行役: メニュー・強化の適用
 - ステージ選択: 10 個のボタン（横持ち 5 列、縦持ち 2 列）。未開放は押せない。クリア済みは ★。
 - 設定: 「調整ボタンを表示」「デバッグ文字を表示」「紐の中心（ハブ）を表示」（`SaveData` の settings。本編の `Main._apply_settings` が読む）、「記録を消す」（2 回押すと消える。設定は残る）。
 - 装備・ガチャ・？？？: 枠だけ（現在の武器の表示、無効な「引く」ボタン、候補の一覧）。
-- 本編: `Main._apply_run_setup` が `RunSetup` を読み、ステージなら `RunState.run_duration` と `EnemySpawner.interval_scale / hp_scale`、エンドレスなら `run_duration = 0`（時間切れなし）と `hp_growth_per_minute` を設定。HUD の先頭に「ステージ N」「エンドレス」、エンドレスは経過時間を表示。
+- 本編: `Main._apply_run_setup` が `RunSetup` を読み、ステージなら `RunState.run_duration = 0`（時間切れのクリアなし）・`RunState.boss_at = StageDef.boss_time`（5 分）と `EnemySpawner.interval_scale / hp_scale`、エンドレスなら `run_duration = 0`・`boss_at = 300`（倒すと 5 分後に次）と `hp_growth_per_minute` を設定。HUD の先頭に「ステージ N」「エンドレス」、エンドレスは経過時間を表示。
 - 結果: ステージをクリアすると記録して次を開放し「次のステージへ / もう一度 / ホームへ」。失敗とエンドレスは「もう一度 / ホームへ」。エンドレスは最高記録を更新したら知らせる。ポーズの「タイトルへ」は「ホームへ」に変更。
+
+## 17. ボス（2026-10-26）
+
+- 出現: `EnemySpawner` が `RunState.boss_at` の時間に `spawn_boss()`（画面外から）。出たら `boss_at = 0`。ボスがいる間はふつうの出現を止める。HUD は「ボスまで mm:ss」→「ボス戦」、ボスの HP バー、「ボス出現！」の告知。
+- クリア: ステージはボスを倒すとクリア（`RunState.win()`）。生き残るだけではクリアにならない。エンドレスは倒すと「ボス撃破！」と出て続き、5 分後に次のボス。
+- `Boss`（`Enemy` を継承、`BossDef` は `EnemyDef` を継承）: 「追う → 技」をくり返す。技の順番は `MOVE_ORDER` = 突進 → 全方位弾 → 突進 → 扇形の狙い撃ち → 手下の呼び出し。突進は溜め（0.8 秒）の間に赤い線で予告。弾を撃つ間は中心がピンクに光る。
+- 怒り: HP 50% 未満で外側に赤い輪。技の間隔 ×0.65、突進が 2 連続。
+- 弾 `EnemyBullet`: まっすぐ飛び、キャラに触れると共有 HP にダメージ（8）。武器・紐では消せない。5 秒で消える。
+- 紐: `EnemyDef.rope_damage_multiplier`（ボスは 3 倍）。紐でボスを削るのが速い。
+- HP: 基本 2500 × ステージの敵 HP 倍率（0.7〜2.0）。数値はすべて仮。

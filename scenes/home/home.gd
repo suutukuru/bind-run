@@ -87,7 +87,7 @@ func select_stage(number: int) -> void:
 func refresh() -> void:
 	var stage: StageDef = StagePool.get_stage(selected_stage)
 	_stage_title.text = "ステージ %d" % selected_stage
-	_stage_note.text = "%s 生き残れ ／ %s" % [RunState.format_time(stage.duration), stage.note]
+	_stage_note.text = "%s でボス出現、倒せばクリア ／ %s" % [RunState.format_time(stage.boss_time), stage.note]
 	if not SaveData.is_unlocked(selected_stage):
 		_stage_status.text = "未開放（ステージ %d をクリアすると開放）" % (selected_stage - 1)
 	elif SaveData.is_cleared(selected_stage):
@@ -177,7 +177,7 @@ func _build_home() -> Control:
 	var endless_card: VBoxContainer = _add_card(_cards)
 	_home_cards.append(endless_card.get_parent() as Control)
 	_add_label(endless_card, "エンドレス", 6.0)
-	_add_label(endless_card, "時間制限なし。敵はどんどん増えて硬くなる", 3.0, DIM)
+	_add_label(endless_card, "時間制限なし。5 分ごとにボスが出て、敵はどんどん硬くなる", 3.0, DIM)
 	_endless_best = _add_label(endless_card, "", 3.2, ACCENT)
 	var endless_button: Button = _add_button(endless_card, "挑戦", 10.0, start_endless)
 	endless_button.set_meta("font_units", 4.6)

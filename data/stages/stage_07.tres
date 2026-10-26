@@ -6,6 +6,6 @@
 script = ExtResource("1_def")
 number = 7
 note = "囲まれないように動こう"
-duration = 240.0
+boss_time = 300.0
 spawn_interval_scale = 0.8
 enemy_hp_scale = 1.45

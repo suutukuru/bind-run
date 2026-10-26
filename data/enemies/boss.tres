@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="BossDef" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/boss_def.gd" id="1_def"]
+[ext_resource type="Resource" path="res://data/enemies/grunt.tres" id="2_grunt"]
+
+[resource]
+script = ExtResource("1_def")
+display_name = "ボス"
+max_hp = 2500.0
+move_speed = 70.0
+contact_damage = 20.0
+xp_value = 30
+radius = 60.0
+color = Color(0.75, 0.15, 0.25, 1)
+rope_damage_multiplier = 3.0
+chase_time = 2.4
+charge_windup = 0.8
+charge_time = 0.6
+charge_speed = 680.0
+ring_bullets = 14
+ring_waves = 3
+fan_bullets = 5
+fan_spread_degrees = 50.0
+fan_waves = 3
+shot_interval = 0.45
+bullet_speed = 260.0
+bullet_damage = 8.0
+summon_def = ExtResource("2_grunt")
+summon_count = 6
+enrage_hp_ratio = 0.5
+enrage_time_scale = 0.65

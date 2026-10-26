@@ -38,7 +38,7 @@ func test_stages_are_numbered_and_get_harder() -> void:
 		check_eq(stage.number, i + 1, "stage %d number" % (i + 1))
 		check_true(stage.note != "", "stage %d has a note" % (i + 1))
 		if previous != null:
-			check_true(stage.duration >= previous.duration, "stage %d is not shorter" % stage.number)
+			check_near(stage.boss_time, 300.0, "stage %d boss at 5 minutes" % stage.number)
 			check_true(stage.spawn_interval_scale <= previous.spawn_interval_scale, "stage %d spawns no less" % stage.number)
 			check_true(stage.enemy_hp_scale >= previous.enemy_hp_scale, "stage %d enemies are not weaker" % stage.number)
 		previous = stage
@@ -105,7 +105,8 @@ func test_a_stage_run_uses_the_stage_settings() -> void:
 	var stage: StageDef = StagePool.get_stage(3)
 	var state: RunState = main.get_node("RunState") as RunState
 	var spawner: EnemySpawner = main.get_node("EnemySpawner") as EnemySpawner
-	check_near(state.run_duration, stage.duration, "duration")
+	check_near(state.run_duration, 0.0, "no time-up clear")
+	check_near(state.boss_at, stage.boss_time, "boss time")
 	check_near(spawner.interval_scale, stage.spawn_interval_scale, "spawn rate")
 	check_near(spawner.hp_scale, stage.enemy_hp_scale, "enemy hp")
 	check_eq((main.get_node("Hud") as Hud).caption, "ステージ 3", "hud caption")
@@ -121,9 +122,12 @@ func test_clearing_a_stage_in_the_game_records_it_and_offers_the_next() -> void:
 	var main: Node = _make("res://scenes/main/main.tscn")
 	var state: RunState = main.get_node("RunState") as RunState
 	var menu: MenuPanel = main.get_node("MenuPanel") as MenuPanel
-	state.elapsed = state.run_duration
+	state.elapsed = 600.0
 	state._physics_process(0.016)
-	check_true(menu.is_open(), "result menu")
+	check_true(state.running and not menu.is_open(), "surviving alone does not clear the stage")
+	var boss: Boss = (main.get_node("EnemySpawner") as EnemySpawner).spawn_boss()
+	boss.take_damage(boss.max_hp())
+	check_true(menu.is_open(), "defeating the boss clears the stage")
 	check_eq(menu.option_count(), 3, "next, retry and home")
 	check_true(SaveData.is_cleared(1) and SaveData.is_unlocked(2), "progress saved")
 	_free(main)

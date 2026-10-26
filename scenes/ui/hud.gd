@@ -1,6 +1,6 @@
 class_name Hud
 extends CanvasLayer
-## 画面上部の HP バー・経験値バー・残り時間（エンドレスでは経過時間）・レベル、ポーズボタン。表示だけを担当する。
+## 画面上部の HP バー・経験値バー・時間（残り / ボスまで / 経過）・レベル、ボスの HP バーと告知、ポーズボタン。表示だけを担当する。
 
 signal pause_requested
 
@@ -11,8 +11,14 @@ var caption: String = "":
 		caption = value
 		if _info != null:
 			_refresh_info()
+## true なら経過時間を出す（エンドレスは生き残った時間が記録になるため）
+var show_elapsed: bool = false
 
 var _run_state: RunState
+var _boss: Enemy
+var _boss_bar: ProgressBar
+var _banner: Label
+var _banner_time: float = 0.0
 var _hp_bar: ProgressBar
 var _xp_bar: ProgressBar
 var _info: Label
@@ -35,21 +41,52 @@ func _ready() -> void:
 	_layout()
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	if _run_state == null:
 		return
+	if _boss != null and (not is_instance_valid(_boss) or _boss.is_dead()):
+		_boss = null
+		_boss_bar.visible = false
+		_refresh_info()
+	if _boss != null:
+		_boss_bar.max_value = _boss.max_hp()
+		_boss_bar.value = _boss.hp
+	if _banner_time > 0.0:
+		_banner_time -= delta
+		_banner.visible = _banner_time > 0.0
 	# 文字は 1 秒ごとにだけ作り直す
-	var shown: int = _shown_time()
+	var shown: int = int(_run_state.elapsed)
 	if shown != _shown_second:
 		_shown_second = shown
 		_refresh_info()
 
 
-# 時間制限があれば残り時間、なければ（エンドレス）経過時間
-func _shown_time() -> int:
-	if _run_state.run_duration <= 0.0:
-		return int(_run_state.elapsed)
-	return maxi(0, ceili(_run_state.run_duration - _run_state.elapsed))
+## ボスの HP バーを出し、出現を告知する
+func show_boss(boss: Enemy) -> void:
+	_boss = boss
+	_boss_bar.visible = true
+	announce("ボス出現！")
+	_refresh_info()
+
+
+## 画面の中央に大きな文字を少しの間だけ出す
+func announce(text: String) -> void:
+	_banner.text = text
+	_banner.visible = true
+	_banner_time = 2.5
+
+
+func _time_text() -> String:
+	var parts: PackedStringArray = PackedStringArray()
+	if show_elapsed or (_run_state.run_duration <= 0.0 and _run_state.boss_at <= 0.0 and _boss == null):
+		parts.append(RunState.format_time(_run_state.elapsed))
+	elif _run_state.run_duration > 0.0:
+		parts.append(RunState.format_time(ceilf(_run_state.run_duration - _run_state.elapsed)))
+	if _boss != null:
+		parts.append("ボス戦")
+	elif _run_state.boss_at > 0.0:
+		parts.append("ボスまで %s" % RunState.format_time(ceilf(_run_state.boss_at - _run_state.elapsed)))
+	return "   ".join(parts)
 
 
 func _build() -> void:
@@ -61,6 +98,16 @@ func _build() -> void:
 	_info.add_theme_color_override("font_outline_color", Color.BLACK)
 	_info.add_theme_constant_override("outline_size", 6)
 	add_child(_info)
+	_boss_bar = _make_bar(Color(0.75, 0.15, 0.25))
+	_boss_bar.visible = false
+	_banner = Label.new()
+	_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_banner.add_theme_color_override("font_color", Color(1, 0.4, 0.4))
+	_banner.add_theme_color_override("font_outline_color", Color.BLACK)
+	_banner.add_theme_constant_override("outline_size", 10)
+	_banner.visible = false
+	add_child(_banner)
 	_pause = Button.new()
 	_pause.text = "II"
 	_pause.pressed.connect(func() -> void: pause_requested.emit())
@@ -94,7 +141,7 @@ func _on_xp_changed(xp: int, needed: int, _level: int) -> void:
 
 func _refresh_info() -> void:
 	var head: String = caption + "   " if caption != "" else ""
-	_info.text = "%sLv %d   %s   撃破 %d" % [head, _run_state.level, RunState.format_time(_shown_time()), _run_state.kills]
+	_info.text = "%sLv %d   %s   撃破 %d" % [head, _run_state.level, _time_text(), _run_state.kills]
 
 
 # 画面の大きさ（向き）が変わるたびに、バー・文字・ボタンの大きさと位置を合わせ直す
@@ -110,6 +157,12 @@ func _layout() -> void:
 	_info.add_theme_font_size_override("font_size", int(3.4 * u))
 	_info.position = Vector2(0, 4.0 * u)
 	_info.size = Vector2(view.x, 4.5 * u)
+	_boss_bar.position = Vector2(view.x * 0.2, 9.0 * u)
+	_boss_bar.size = Vector2(view.x * 0.6, 2.2 * u)
+	_boss_bar.custom_minimum_size = _boss_bar.size
+	_banner.add_theme_font_size_override("font_size", int(9.0 * u))
+	_banner.position = Vector2(0, view.y * 0.3)
+	_banner.size = Vector2(view.x, 12.0 * u)
 	var ui_theme: Theme = Theme.new()
 	ui_theme.default_font_size = int(3.4 * u)
 	_pause.theme = ui_theme

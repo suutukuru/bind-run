@@ -6,6 +6,6 @@
 script = ExtResource("1_def")
 number = 5
 note = "敵の数が増えてくる"
-duration = 180.0
+boss_time = 300.0
 spawn_interval_scale = 0.9
 enemy_hp_scale = 1.15

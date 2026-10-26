@@ -6,6 +6,6 @@
 script = ExtResource("1_def")
 number = 1
 note = "まずは操作に慣れよう"
-duration = 90.0
+boss_time = 300.0
 spawn_interval_scale = 1.4
 enemy_hp_scale = 0.7

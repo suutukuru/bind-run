@@ -21,6 +21,7 @@
 [ext_resource type="Script" path="res://scenes/ui/hud.gd" id="19_hud"]
 [ext_resource type="Script" path="res://scenes/ui/menu_panel.gd" id="20_menu"]
 [ext_resource type="Script" path="res://scenes/world/grid_background.gd" id="21_grid"]
+[ext_resource type="Resource" path="res://data/enemies/boss.tres" id="22_boss"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
@@ -71,6 +72,7 @@ script = ExtResource("15_spawner")
 defs = [ExtResource("16_grunt"), ExtResource("17_runner"), ExtResource("18_tank")]
 camera_path = NodePath("../Camera")
 run_state_path = NodePath("../RunState")
+boss_def = ExtResource("22_boss")
 
 [node name="Camera" type="Camera2D" parent="."]
 script = ExtResource("7_camera")
