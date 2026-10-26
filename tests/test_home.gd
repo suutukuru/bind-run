@@ -225,6 +225,9 @@ func _check_layout(size: Vector2i, label: String) -> void:
 		await tree.process_frame
 		await tree.process_frame
 		for button: Button in _visible_buttons(home._pages[page_index]):
+			# 画面に収まらないページは縦にスクロールできる。スクロールして見える位置に出せることを確かめる
+			(home._pages[page_index] as ScrollContainer).ensure_control_visible(button)
+			await tree.process_frame
 			var rect: Rect2 = button.get_global_rect()
 			var where: String = "%s page %d button '%s' rect=%s" % [info, page_index, button.text.replace("\n", "/"), str(rect)]
 			check_true(rect.position.x >= -1.0 and rect.end.x <= view.x + 1.0, "inside horizontally: " + where)
@@ -235,6 +238,8 @@ func _check_layout(size: Vector2i, label: String) -> void:
 	await tree.process_frame
 	await tree.process_frame
 	for button: Button in _visible_buttons(home._stage_page):
+		(home._stage_page as ScrollContainer).ensure_control_visible(button)
+		await tree.process_frame
 		var rect: Rect2 = button.get_global_rect()
 		var where: String = "%s stage list button '%s' rect=%s" % [info, button.text.replace("\n", "/"), str(rect)]
 		check_true(rect.position.x >= -1.0 and rect.end.x <= view.x + 1.0, "inside horizontally: " + where)

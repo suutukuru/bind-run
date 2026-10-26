@@ -20,6 +20,12 @@ const SETTINGS: Array = [
 ]
 ## 設定「CPU 担当」の選択肢（Main の CPU_NONE / CPU_BLUE / CPU_ORANGE と同じ順）
 const CPU_CHOICES: Array = ["自分で両方を操作", "青（A）を CPU に任せる", "橙（B）を CPU に任せる"]
+## 文字の折り返す幅の基準（_layout で px にする）
+const WRAP_PAGE: int = 0
+const WRAP_CARD: int = 1
+const WRAP_HOME_CARD: int = 2
+## カードの内側の余白（_add_card の content_margin）
+const CARD_MARGIN: float = 16.0
 const ACCENT: Color = Color(1.0, 0.82, 0.4)
 const DIM: Color = Color(1, 1, 1, 0.65)
 
@@ -185,7 +191,7 @@ func _build_home() -> Control:
 	endless_button.set_meta("font_units", 4.6)
 
 	_add_label(box, "操作: 画面の左半分をドラッグで青、右半分で橙が動く", 2.8, DIM)
-	return box.get_parent() as Control
+	return _page_of(box)
 
 
 func _build_stage_select() -> Control:
@@ -198,7 +204,7 @@ func _build_stage_select() -> Control:
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		_stage_buttons.append(button)
 	_add_button(box, "戻る", 8.0, show_tab.bind(TAB_HOME))
-	return box.get_parent() as Control
+	return _page_of(box)
 
 
 func _build_equipment() -> Control:
@@ -215,7 +221,7 @@ func _build_equipment() -> Control:
 	]:
 		_add_label(card, line, 3.4)
 	_add_label(box, "装備の入れ替えは準備中です", 3.0, DIM)
-	return box.get_parent() as Control
+	return _page_of(box)
 
 
 func _build_gacha() -> Control:
@@ -230,7 +236,7 @@ func _build_gacha() -> Control:
 		var button: Button = _add_button(row, text, 9.0, func() -> void: pass)
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.disabled = true
-	return box.get_parent() as Control
+	return _page_of(box)
 
 
 func _build_undecided() -> Control:
@@ -239,7 +245,7 @@ func _build_undecided() -> Control:
 	var card: VBoxContainer = _add_card(box)
 	_add_label(card, "ここに何を置くかは未定です", 3.4)
 	_add_label(card, "候補: ミッション / 図鑑 / ショップ / ランキング", 3.0, DIM)
-	return box.get_parent() as Control
+	return _page_of(box)
 
 
 func _build_settings() -> Control:
@@ -266,7 +272,7 @@ func _build_settings() -> Control:
 	_scaled.append(cpu)
 	_reset_button = _add_button(card, "記録を消す", 8.0, _on_reset_pressed)
 	_add_label(box, "開発版（Web）", 2.6, DIM)
-	return box.get_parent() as Control
+	return _page_of(box)
 
 
 func _on_stage_chosen(number: int) -> void:
@@ -287,16 +293,27 @@ func _on_reset_pressed() -> void:
 	refresh()
 
 
-# ページの土台: 画面中央に縦に並べる箱を返す（ページ本体は box.get_parent()）
+# ページの土台: 縦に並べる箱を返す。画面に収まらないときは縦にスクロールできる
+# （縦持ち・小さい端末で、下のボタンが画面の外に出て押せなくなるのを防ぐ）。
+# ページ本体は _page_of(box)。中身が短いときは ScrollContainer の中で中央に寄る
 func _new_page() -> VBoxContainer:
-	var page: CenterContainer = CenterContainer.new()
+	var page: ScrollContainer = ScrollContainer.new()
 	page.visible = false
+	page.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	_content.add_child(page)
+	var center: CenterContainer = CenterContainer.new()
+	center.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	center.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	page.add_child(center)
 	var box: VBoxContainer = VBoxContainer.new()
 	box.alignment = BoxContainer.ALIGNMENT_CENTER
-	page.add_child(box)
+	center.add_child(box)
 	_boxes.append(box)
 	return box
+
+
+func _page_of(box: Control) -> Control:
+	return box.get_parent().get_parent() as Control
 
 
 func _add_card(parent: Control) -> VBoxContainer:
@@ -304,11 +321,12 @@ func _add_card(parent: Control) -> VBoxContainer:
 	var style: StyleBoxFlat = StyleBoxFlat.new()
 	style.bg_color = Color(1, 1, 1, 0.07)
 	style.set_corner_radius_all(12)
-	style.set_content_margin_all(16.0)
+	style.set_content_margin_all(CARD_MARGIN)
 	card.add_theme_stylebox_override("panel", style)
 	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	parent.add_child(card)
 	var box: VBoxContainer = VBoxContainer.new()
+	box.set_meta("in_home_cards", parent == _cards)
 	card.add_child(box)
 	return box
 
@@ -320,6 +338,11 @@ func _add_label(parent: Control, text: String, font_units: float, color: Color =
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.add_theme_color_override("font_color", color)
 	label.set_meta("font_units", font_units)
+	# 折り返す幅は _layout で決める。幅が決まらないと 1 文字ずつ折り返して縦に伸びる
+	if parent.has_meta("in_home_cards"):
+		label.set_meta("wrap", WRAP_HOME_CARD if parent.get_meta("in_home_cards") else WRAP_CARD)
+	else:
+		label.set_meta("wrap", WRAP_PAGE)
 	parent.add_child(label)
 	_scaled.append(label)
 	return label
@@ -370,7 +393,16 @@ func _layout() -> void:
 	_stage_grid.add_theme_constant_override("h_separation", int(1.5 * u))
 	_stage_grid.add_theme_constant_override("v_separation", int(1.5 * u))
 
+	var home_card_width: float = (width - 2.0 * u) / _cards.columns
 	for control: Control in _scaled:
+		if control is Label and control.has_meta("wrap"):
+			var wrap: int = int(control.get_meta("wrap"))
+			var wrap_width: float = width
+			if wrap == WRAP_CARD:
+				wrap_width = width - 2.0 * CARD_MARGIN
+			elif wrap == WRAP_HOME_CARD:
+				wrap_width = home_card_width - 2.0 * CARD_MARGIN
+			control.custom_minimum_size.x = wrap_width
 		if control.has_meta("font_units"):
 			control.add_theme_font_size_override("font_size", int(float(control.get_meta("font_units")) * u))
 		if control.has_meta("height_units"):
