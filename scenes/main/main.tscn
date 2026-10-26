@@ -99,6 +99,7 @@ script = ExtResource("9_tuning")
 rope_path = NodePath("../Rope")
 overlay_path = NodePath("../DebugOverlay")
 camera_path = NodePath("../Camera")
+run_state_path = NodePath("../RunState")
 
 [node name="Hud" type="CanvasLayer" parent="."]
 script = ExtResource("19_hud")

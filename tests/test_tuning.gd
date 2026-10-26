@@ -62,3 +62,22 @@ func test_japanese_ui_font_covers_the_game_text() -> void:
 	for text: String in ["スタート", "撃破", "紐の最大長", "レベルアップ"]:
 		for i: int in text.length():
 			check_true(font.has_char(text.unicode_at(i)), "glyph for %s" % text[i])
+
+
+func test_skip_to_boss_moves_the_clock_just_before_the_boss() -> void:
+	SaveData.path = "user://test_save.cfg"
+	RunSetup.start_stage(1)
+	var main: Node = _make_main()
+	var panel: TuningPanel = main.get_node("TuningPanel") as TuningPanel
+	var state: RunState = main.get_node("RunState") as RunState
+	var spawner: EnemySpawner = main.get_node("EnemySpawner") as EnemySpawner
+	panel.skip_to_boss()
+	check_near(state.elapsed, 300.0 - TuningPanel.BOSS_SKIP_LEAD, "just before the boss")
+	check_true(spawner.boss == null, "the boss is not out yet")
+	state.elapsed = 400.0
+	panel.skip_to_boss()
+	check_near(state.elapsed, 400.0, "never goes backwards")
+	_free_main(main)
+	SaveData.delete_file()
+	SaveData.path = "user://save.cfg"
+	RunSetup.reset()

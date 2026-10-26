@@ -7,6 +7,9 @@ extends CanvasLayer
 @export var rope_path: NodePath
 @export var overlay_path: NodePath
 @export var camera_path: NodePath
+@export var run_state_path: NodePath
+## ボスまで飛ばしたとき、出現の何秒前に止めるか（HP バーなどの出現前の表示も見られる）
+const BOSS_SKIP_LEAD: float = 3.0
 
 ## [プロパティ名, 表示名, 最小, 最大, 刻み]
 const SLIDERS: Array = [
@@ -22,6 +25,7 @@ const SLIDERS: Array = [
 var _rope: Rope
 var _overlay: DebugOverlay
 var _camera: FollowCamera
+var _run_state: RunState
 var _root: Control
 var _toggle: Button
 var _panel: PanelContainer
@@ -39,6 +43,7 @@ func _ready() -> void:
 	_rope = get_node_or_null(rope_path) as Rope
 	_overlay = get_node_or_null(overlay_path) as DebugOverlay
 	_camera = get_node_or_null(camera_path) as FollowCamera
+	_run_state = get_node_or_null(run_state_path) as RunState
 	if _rope == null or _rope.config == null:
 		push_error("TuningPanel: Rope が見つかりません: %s" % rope_path)
 		return
@@ -51,6 +56,13 @@ func _ready() -> void:
 func set_param(property: String, value: float) -> void:
 	_rope.config.set(property, value)
 	_update_label(property)
+
+
+## 時間を進めて、ボスが出る少し前にする（確認に 5 分待たないため）。ボスがいない/出済みなら何もしない
+func skip_to_boss() -> void:
+	if _run_state == null or _run_state.boss_at <= 0.0:
+		return
+	_run_state.elapsed = maxf(_run_state.elapsed, _run_state.boss_at - BOSS_SKIP_LEAD)
 
 
 ## 右上の「調整」ボタンの表示（ホームの設定で切り替える）。隠すときはパネルも閉じる
@@ -134,6 +146,12 @@ func _build() -> void:
 		_view_slider.value_changed.connect(set_view_size)
 		view_row.add_child(_view_slider)
 		set_view_size(_camera.view_short_side)
+
+	if _run_state != null:
+		var skip: Button = Button.new()
+		skip.text = "ボスまで飛ばす"
+		skip.pressed.connect(skip_to_boss)
+		box.add_child(skip)
 
 	_mode = OptionButton.new()
 	_mode.add_item("限界: 相方を引く")
