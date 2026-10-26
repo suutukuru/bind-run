@@ -206,3 +206,60 @@ func test_default_has_no_cpu() -> void:
 	check_true(main.get_node_or_null("CpuA") == null and main.get_node_or_null("CpuB") == null, "no cpu by default")
 	_free(main)
 	_restore()
+
+
+# 画面の大きさ（縦持ち・横持ち）を変えて、ボタンが画面内にあり、下のツールバーと重ならないことを確かめる
+func _check_layout(size: Vector2i, label: String) -> void:
+	_use_test_save()
+	SaveData.record_stage_clear(1)
+	tree.root.size = size
+	var home: Home = _make("res://scenes/home/home.tscn") as Home
+	await tree.process_frame
+	await tree.process_frame
+	var view: Vector2 = home.get_viewport().get_visible_rect().size
+	var bar: Rect2 = home._tab_bar.get_global_rect()
+	var info: String = "%s view=%s bar=%s" % [label, str(view), str(bar)]
+	check_true(bar.position.y + bar.size.y <= view.y + 1.0 and bar.size.x <= view.x + 1.0, "tab bar inside the screen: " + info)
+	for page_index: int in [Home.TAB_HOME, Home.TAB_SETTINGS]:
+		home.show_tab(page_index)
+		await tree.process_frame
+		await tree.process_frame
+		for button: Button in _visible_buttons(home._pages[page_index]):
+			var rect: Rect2 = button.get_global_rect()
+			var where: String = "%s page %d button '%s' rect=%s" % [info, page_index, button.text.replace("\n", "/"), str(rect)]
+			check_true(rect.position.x >= -1.0 and rect.end.x <= view.x + 1.0, "inside horizontally: " + where)
+			check_true(rect.position.y >= -1.0, "not above the screen: " + where)
+			check_true(rect.end.y <= bar.position.y + 1.0, "not under the tab bar: " + where)
+			check_true(rect.size.x > 20.0 and rect.size.y > 20.0, "big enough to press: " + where)
+	home.show_stage_select()
+	await tree.process_frame
+	await tree.process_frame
+	for button: Button in _visible_buttons(home._stage_page):
+		var rect: Rect2 = button.get_global_rect()
+		var where: String = "%s stage list button '%s' rect=%s" % [info, button.text.replace("\n", "/"), str(rect)]
+		check_true(rect.position.x >= -1.0 and rect.end.x <= view.x + 1.0, "inside horizontally: " + where)
+		check_true(rect.position.y >= -1.0 and rect.end.y <= bar.position.y + 1.0, "inside vertically: " + where)
+	_free(home)
+	_restore()
+
+
+func _visible_buttons(root: Node) -> Array[Button]:
+	var found: Array[Button] = []
+	for child: Node in root.get_children():
+		var control: Control = child as Control
+		if control != null and not control.visible:
+			continue
+		if child is Button:
+			found.append(child)
+		found.append_array(_visible_buttons(child))
+	return found
+
+
+func test_home_layout_portrait() -> void:
+	await _check_layout(Vector2i(390, 844), "portrait 390x844")
+	tree.root.size = Vector2i(1280, 720)
+
+
+func test_home_layout_landscape() -> void:
+	await _check_layout(Vector2i(844, 390), "landscape 844x390")
+	tree.root.size = Vector2i(1280, 720)
