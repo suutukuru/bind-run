@@ -167,3 +167,42 @@ func test_time_format() -> void:
 	check_eq(RunState.format_time(0.0), "00:00", "zero")
 	check_eq(RunState.format_time(125.9), "02:05", "minutes and seconds")
 	check_eq(RunState.format_time(-3.0), "00:00", "negative is zero")
+
+
+func test_cpu_moves_away_from_threats_and_back_to_the_partner() -> void:
+	var none: PackedVector2Array = PackedVector2Array()
+	var no_radius: PackedFloat32Array = PackedFloat32Array()
+	check_vec_near(CpuMoveInput.compute_intent(Vector2.ZERO, Vector2(100, 0), none, no_radius, 260.0, 300.0), Vector2.ZERO, "calm and close: stay")
+	var back: Vector2 = CpuMoveInput.compute_intent(Vector2.ZERO, Vector2(600, 0), none, no_radius, 260.0, 300.0)
+	check_true(back.x > 0.0 and absf(back.y) < 0.001, "too far from the partner: go back")
+	var flee: Vector2 = CpuMoveInput.compute_intent(Vector2.ZERO, Vector2(100, 0), PackedVector2Array([Vector2(60, 0)]), PackedFloat32Array([40.0]), 260.0, 300.0)
+	check_true(flee.x < -0.5, "an enemy on the right: run left")
+	var far: Vector2 = CpuMoveInput.compute_intent(Vector2.ZERO, Vector2(100, 0), PackedVector2Array([Vector2(900, 0)]), PackedFloat32Array([40.0]), 260.0, 300.0)
+	check_vec_near(far, Vector2.ZERO, "a far enemy is ignored")
+	check_true(CpuMoveInput.compute_intent(Vector2.ZERO, Vector2.ZERO, PackedVector2Array([Vector2.ZERO]), PackedFloat32Array([10.0]), 260.0, 300.0).length() > 0.5, "on top of an enemy: still picks a direction")
+
+
+func test_cpu_setting_takes_over_one_character() -> void:
+	_use_test_save()
+	SaveData.set_setting("cpu_side", 2)  # 橙（B）を CPU に
+	var main: Node = _make("res://scenes/main/main.tscn")
+	check_true(main.get_node("InputB").process_mode == Node.PROCESS_MODE_DISABLED, "keyboard B off")
+	check_true(main.get_node("TouchLayer/TouchB").process_mode == Node.PROCESS_MODE_DISABLED, "touch B off")
+	check_true(main.get_node("InputA").process_mode != Node.PROCESS_MODE_DISABLED, "A is still human")
+	var cpu: CpuMoveInput = main.get_node("CpuB") as CpuMoveInput
+	check_true(cpu != null and cpu.target != null and cpu.partner != null, "cpu is wired")
+	var b: Character = main.get_node("CharacterB") as Character
+	var spawner: EnemySpawner = main.get_node("EnemySpawner") as EnemySpawner
+	spawner.spawn_enemy(load("res://data/enemies/grunt.tres") as EnemyDef, b.global_position + Vector2(50, 0))
+	cpu._physics_process(0.016)
+	check_true(b.move_intent.x < -0.3, "the cpu runs away from the enemy")
+	_free(main)
+	_restore()
+
+
+func test_default_has_no_cpu() -> void:
+	_use_test_save()
+	var main: Node = _make("res://scenes/main/main.tscn")
+	check_true(main.get_node_or_null("CpuA") == null and main.get_node_or_null("CpuB") == null, "no cpu by default")
+	_free(main)
+	_restore()

@@ -5,6 +5,10 @@ extends Node2D
 const HOME_SCENE: String = "res://scenes/home/home.tscn"
 ## レベルアップで提示する強化の数（FR-043 の仮決定）
 const CHOICES: int = 3
+## 設定「CPU 担当」の値（SaveData の cpu_side）
+const CPU_NONE: int = 0
+const CPU_BLUE: int = 1
+const CPU_ORANGE: int = 2
 
 @onready var _rope: Rope = $Rope
 @onready var _run_state: RunState = $RunState
@@ -41,6 +45,22 @@ func _apply_settings() -> void:
 	_tuning.set_toggle_visible(bool(SaveData.get_setting("show_tuning", true)))
 	_overlay.set_text_visible(bool(SaveData.get_setting("debug_text", true)))
 	_rope.show_hub = bool(SaveData.get_setting("show_hub", false))
+	_apply_cpu(int(SaveData.get_setting("cpu_side", CPU_NONE)))
+
+
+# デバッグ用: 片方のキャラを CPU に任せる。その側の人の入力（キーボード・タッチ）は止める
+func _apply_cpu(side: int) -> void:
+	if side != CPU_BLUE and side != CPU_ORANGE:
+		return
+	var who: String = "A" if side == CPU_BLUE else "B"
+	var partner: String = "B" if side == CPU_BLUE else "A"
+	get_node("Input" + who).process_mode = Node.PROCESS_MODE_DISABLED
+	get_node("TouchLayer/Touch" + who).process_mode = Node.PROCESS_MODE_DISABLED
+	var cpu: CpuMoveInput = CpuMoveInput.new()
+	cpu.name = "Cpu" + who
+	cpu.target_path = NodePath("../Character" + who)
+	cpu.partner_path = NodePath("../Character" + partner)
+	add_child(cpu)
 
 
 func _apply_run_setup() -> void:

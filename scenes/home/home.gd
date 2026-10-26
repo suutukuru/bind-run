@@ -18,6 +18,8 @@ const SETTINGS: Array = [
 	["debug_text", "デバッグ文字を表示（開発用）", true],
 	["show_hub", "紐の中心（ハブ）を表示", false],
 ]
+## 設定「CPU 担当」の選択肢（Main の CPU_NONE / CPU_BLUE / CPU_ORANGE と同じ順）
+const CPU_CHOICES: Array = ["自分で両方を操作", "青（A）を CPU に任せる", "橙（B）を CPU に任せる"]
 const ACCENT: Color = Color(1.0, 0.82, 0.4)
 const DIM: Color = Color(1, 1, 1, 0.65)
 
@@ -253,6 +255,15 @@ func _build_settings() -> Control:
 		check.set_meta("height_units", 8.0)
 		card.add_child(check)
 		_scaled.append(check)
+	_add_label(card, "CPU 担当（デバッグ用。片方を CPU に任せる）", 2.8, DIM)
+	var cpu: OptionButton = OptionButton.new()
+	for text: String in CPU_CHOICES:
+		cpu.add_item(text)
+	cpu.selected = clampi(int(SaveData.get_setting("cpu_side", 0)), 0, CPU_CHOICES.size() - 1)
+	cpu.item_selected.connect(func(index: int) -> void: SaveData.set_setting("cpu_side", index))
+	cpu.set_meta("height_units", 8.0)
+	card.add_child(cpu)
+	_scaled.append(cpu)
 	_reset_button = _add_button(card, "記録を消す", 8.0, _on_reset_pressed)
 	_add_label(box, "開発版（Web）", 2.6, DIM)
 	return box.get_parent() as Control
