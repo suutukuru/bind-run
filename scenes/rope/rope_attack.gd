@@ -48,4 +48,18 @@ func step(delta: float) -> void:
 			if RopeModel.distance_to_segment(enemy.global_position, _rope.hub, end) <= reach:
 				enemy.take_damage(config.attack_damage * enemy.def.rope_damage_multiplier)
 				enemy.rope_hit_ready_at = _clock + config.attack_rehit_interval
+	if _rope.pinned and members.size() >= 2:
+		active = true
+		_hit_inside_triangle(config, members[0].global_position, members[1].global_position, enemies)
 	_rope.attack_active = active
+
+
+# 固定中: 固定の点・A・B の三角形の中（縁を含む）の敵に囲みダメージ。再ヒット間隔は紐攻撃と共通
+func _hit_inside_triangle(config: RopeConfig, a: Vector2, b: Vector2, enemies: Array[Node]) -> void:
+	for node: Node in enemies:
+		var enemy: Enemy = node as Enemy
+		if enemy == null or enemy.def == null or enemy.is_dead() or enemy.rope_hit_ready_at > _clock:
+			continue
+		if RopeModel.near_triangle(enemy.global_position, _rope.hub, a, b, enemy.def.radius + config.attack_half_width):
+			enemy.take_damage(config.loop_damage * enemy.def.rope_damage_multiplier)
+			enemy.rope_hit_ready_at = _clock + config.attack_rehit_interval

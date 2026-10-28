@@ -51,6 +51,29 @@ static func follow_hub(current: Vector2, target: Vector2, rate: float, delta: fl
 	return current.lerp(target, minf(1.0, rate * delta))
 
 
+## 錨モード: 最大長を超えて引っ張られた分だけ、錨（固定の点）を引っ張った方向へ動かす。
+## 動かせる合計は budget（速さ × 時間）まで。2 人が逆向きに引くと、動く量は打ち消し合う。
+static func drag_anchor(anchor: Vector2, points: PackedVector2Array, max_radius: float, budget: float) -> Vector2:
+	var result: Vector2 = anchor
+	var left: float = maxf(budget, 0.0)
+	for point: Vector2 in points:
+		var offset: Vector2 = point - result
+		var excess: float = offset.length() - max_radius
+		if excess <= 0.0 or left <= 0.0:
+			continue
+		var move: float = minf(excess, left)
+		result += offset.normalized() * move
+		left -= move
+	return result
+
+
+## 点 p が三角形 a-b-c の中、または縁から margin 以内にあるか（囲みダメージの判定）
+static func near_triangle(p: Vector2, a: Vector2, b: Vector2, c: Vector2, margin: float) -> bool:
+	if Geometry2D.is_point_in_polygon(p, PackedVector2Array([a, b, c])):
+		return true
+	return distance_to_segment(p, a, b) <= margin or distance_to_segment(p, b, c) <= margin or distance_to_segment(p, c, a) <= margin
+
+
 ## 点 p と線分 a-b の距離（紐攻撃の当たり判定に使う）
 static func distance_to_segment(p: Vector2, a: Vector2, b: Vector2) -> float:
 	return p.distance_to(Geometry2D.get_closest_point_to_segment(p, a, b))

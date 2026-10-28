@@ -20,6 +20,10 @@ const SLIDERS: Array = [
 	["attack_damage", "紐のダメージ", 1.0, 60.0, 1.0],
 	["attack_threshold", "紐攻撃の伸び率", 0.3, 1.0, 0.05],
 	["attack_half_width", "紐の当たり幅", 4.0, 80.0, 2.0],
+	["pin_max_seconds", "固定の時間", 1.0, 10.0, 0.5],
+	["pin_cooldown", "固定の待ち時間", 0.0, 10.0, 0.5],
+	["pin_drag_speed", "錨の引きずり速さ", 0.0, 320.0, 10.0],
+	["loop_damage", "囲みダメージ", 1.0, 60.0, 1.0],
 ]
 
 var _rope: Rope
@@ -29,6 +33,8 @@ var _run_state: RunState
 var _root: Control
 var _toggle: Button
 var _panel: PanelContainer
+var _scroll: ScrollContainer
+var _box: VBoxContainer
 var _mode: OptionButton
 var _sliders: Dictionary = {}
 var _value_labels: Dictionary = {}
@@ -109,8 +115,13 @@ func _build() -> void:
 	_panel = PanelContainer.new()
 	_panel.visible = false
 	_root.add_child(_panel)
+	# 項目が多いので、画面に収まらないときは縦にスクロールできる
+	_scroll = ScrollContainer.new()
+	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_panel.add_child(_scroll)
 	var box: VBoxContainer = VBoxContainer.new()
-	_panel.add_child(box)
+	_box = box
+	_scroll.add_child(box)
 
 	for def: Array in SLIDERS:
 		var property: String = def[0]
@@ -193,9 +204,21 @@ func _layout() -> void:
 	_toggle.custom_minimum_size = Vector2(12.0 * u, 6.0 * u)
 	_toggle.position = Vector2(view.x - 12.0 * u - margin, top)
 	_panel.position = Vector2(view.x - 58.0 * u - margin, top + 7.5 * u)
+
 	if _view_slider != null:
 		_view_slider.custom_minimum_size = Vector2(26.0 * u, 5.0 * u)
 		_view_label.custom_minimum_size = Vector2(28.0 * u, 0)
 	for property: String in _sliders:
 		(_sliders[property] as HSlider).custom_minimum_size = Vector2(26.0 * u, 5.0 * u)
 		(_value_labels[property] as Label).custom_minimum_size = Vector2(28.0 * u, 0)
+	# 中身の大きさが決まった後に高さを合わせる
+	_fit_scroll.call_deferred()
+
+
+# パネルを画面の下端までに収まる高さにする（中身が低ければ中身の高さ。収まらなければスクロール）
+func _fit_scroll() -> void:
+	if _scroll == null:
+		return
+	var margin: float = 1.5 * UiScale.unit(get_viewport())
+	var available: float = get_viewport().get_visible_rect().size.y - _panel.position.y - margin
+	_scroll.custom_minimum_size.y = minf(_box.get_combined_minimum_size().y, available)

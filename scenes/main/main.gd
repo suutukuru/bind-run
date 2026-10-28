@@ -34,6 +34,7 @@ func _ready() -> void:
 	_run_state.leveled_up.connect(_on_leveled_up)
 	_run_state.finished.connect(_on_finished)
 	_hud.pause_requested.connect(_open_pause)
+	_hud.pin_requested.connect(_rope.toggle_pin)
 	_spawner.boss_spawned.connect(_hud.show_boss)
 	_spawner.boss_defeated.connect(_on_boss_defeated)
 	_apply_settings()
@@ -45,6 +46,7 @@ func _apply_settings() -> void:
 	_tuning.set_toggle_visible(bool(SaveData.get_setting("show_tuning", true)))
 	_overlay.set_text_visible(bool(SaveData.get_setting("debug_text", true)))
 	_rope.show_hub = bool(SaveData.get_setting("show_hub", false))
+	_rope.config.pin_mode = clampi(int(SaveData.get_setting("pin_mode", RopeConfig.PIN_FIXED)), RopeConfig.PIN_OFF, RopeConfig.PIN_DRAG)
 	_apply_cpu(int(SaveData.get_setting("cpu_side", CPU_NONE)))
 
 
@@ -83,7 +85,26 @@ func _apply_run_setup() -> void:
 		_hud.caption = "エンドレス"
 
 
+func _process(_delta: float) -> void:
+	_update_pin_button()
+
+
+# 固定ボタンの文字: 押せる「固定」/ 固定中の残り時間「解除」/ 待ち時間
+func _update_pin_button() -> void:
+	if _rope.config.pin_mode == RopeConfig.PIN_OFF:
+		_hud.set_pin_state("", false, false)
+	elif _rope.pinned:
+		_hud.set_pin_state("解除 %.1f" % _rope.pin_time_left, true, true)
+	elif _rope.pin_cooldown_left > 0.0:
+		_hud.set_pin_state("待機 %.1f" % _rope.pin_cooldown_left, false, true)
+	else:
+		_hud.set_pin_state("固定", true, true)
+
+
 func _unhandled_input(event: InputEvent) -> void:
+	# スペースキー: 固定（試作）
+	if event.is_action_pressed("pin"):
+		_rope.toggle_pin()
 	# F1: ハブの点の表示切替。見た目だけで、ロジックは変わらない
 	if event.is_action_pressed("debug_toggle_hub"):
 		_rope.show_hub = not _rope.show_hub

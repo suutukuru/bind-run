@@ -3,6 +3,7 @@ extends CanvasLayer
 ## 画面上部の HP バー・経験値バー・時間（残り / ボスまで / 経過）・レベル、ボスの HP バーと告知、ポーズボタン。表示だけを担当する。
 
 signal pause_requested
+signal pin_requested
 
 @export var run_state_path: NodePath
 ## 先頭に出す文字（「ステージ 3」「エンドレス」など）
@@ -23,6 +24,7 @@ var _hp_bar: ProgressBar
 var _xp_bar: ProgressBar
 var _info: Label
 var _pause: Button
+var _pin_button: Button
 var _shown_second: int = -1
 
 
@@ -69,6 +71,16 @@ func show_boss(boss: Enemy) -> void:
 	_refresh_info()
 
 
+## 固定ボタンの表示（試作）。文字が同じなら何もしない
+func set_pin_state(text: String, enabled: bool, shown: bool) -> void:
+	if _pin_button == null:
+		return
+	_pin_button.visible = shown
+	_pin_button.disabled = not enabled
+	if _pin_button.text != text:
+		_pin_button.text = text
+
+
 ## 画面の中央に大きな文字を少しの間だけ出す
 func announce(text: String) -> void:
 	_banner.text = text
@@ -108,6 +120,12 @@ func _build() -> void:
 	_banner.add_theme_constant_override("outline_size", 10)
 	_banner.visible = false
 	add_child(_banner)
+	_pin_button = Button.new()
+	_pin_button.text = "固定"
+	_pin_button.focus_mode = Control.FOCUS_NONE
+	_pin_button.visible = false
+	_pin_button.pressed.connect(func() -> void: pin_requested.emit())
+	add_child(_pin_button)
 	_pause = Button.new()
 	_pause.text = "II"
 	_pause.pressed.connect(func() -> void: pause_requested.emit())
@@ -166,5 +184,10 @@ func _layout() -> void:
 	var ui_theme: Theme = Theme.new()
 	ui_theme.default_font_size = int(3.4 * u)
 	_pause.theme = ui_theme
+	_pin_button.theme = ui_theme
+	# 画面の下の中央: 左右の親指が乗る位置の間。押している間は片方の親指がスティックから離れる
+	_pin_button.custom_minimum_size = Vector2(24.0 * u, 10.0 * u)
+	_pin_button.size = _pin_button.custom_minimum_size
+	_pin_button.position = Vector2((view.x - 24.0 * u) * 0.5, view.y - 12.0 * u)
 	_pause.custom_minimum_size = Vector2(10.0 * u, 6.0 * u)
 	_pause.position = Vector2(1.5 * u, 6.5 * u)

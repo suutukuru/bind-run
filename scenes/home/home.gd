@@ -26,6 +26,8 @@ const WRAP_CARD: int = 1
 const WRAP_HOME_CARD: int = 2
 ## カードの内側の余白（_add_card の content_margin）
 const CARD_MARGIN: float = 16.0
+## 設定「固定ボタン」の選択肢（RopeConfig の PIN_OFF / PIN_FIXED / PIN_DRAG と同じ順。試作の比べ用）
+const PIN_CHOICES: Array = ["固定ボタンなし", "固定: 完全に固定", "固定: 錨（引きずる）"]
 const ACCENT: Color = Color(1.0, 0.82, 0.4)
 const DIM: Color = Color(1, 1, 1, 0.65)
 
@@ -270,6 +272,15 @@ func _build_settings() -> Control:
 	cpu.set_meta("height_units", 8.0)
 	card.add_child(cpu)
 	_scaled.append(cpu)
+	_add_label(card, "紐の固定ボタン（試作。完全固定と錨を比べる）", 2.8, DIM)
+	var pin: OptionButton = OptionButton.new()
+	for text: String in PIN_CHOICES:
+		pin.add_item(text)
+	pin.selected = clampi(int(SaveData.get_setting("pin_mode", RopeConfig.PIN_FIXED)), 0, PIN_CHOICES.size() - 1)
+	pin.item_selected.connect(func(index: int) -> void: SaveData.set_setting("pin_mode", index))
+	pin.set_meta("height_units", 8.0)
+	card.add_child(pin)
+	_scaled.append(pin)
 	_reset_button = _add_button(card, "記録を消す", 8.0, _on_reset_pressed)
 	_add_label(box, "開発版（Web）", 2.6, DIM)
 	return _page_of(box)

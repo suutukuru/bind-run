@@ -38,4 +38,4 @@ func _update_view() -> void:
 	var factor: float = zoom_for(get_viewport_rect().size, view_short_side)
 	zoom = Vector2(factor, factor)
 	if _rope != null:
-		global_position = _rope.hub
+		global_position = _rope.view_center()
